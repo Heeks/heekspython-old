@@ -6,6 +6,8 @@
 #include <wx/fileconf.h>
 #include "ConsoleCanvas.h"
 
+#include <fstream>
+
 #ifdef _DEBUG
 #undef _DEBUG
 #include <Python.h>
@@ -73,9 +75,99 @@ import wx.py\n\
 sys.path.append('.')\n\
 output = wx.PyOnDemandOutputWindow()\n\
 sys.stdin = sys.stderr = output\n\
+app = wx.App()\n\
 def makeWindow(parent,style=wx.TE_MULTILINE | wx.TE_DONTWRAP):\n\
     return wx.py.shell.Shell(parent)\n\
 ";
+
+PyObject *_pPyModule;
+PyObject *_pPyDictionary;
+PyObject *_pPyGetValFunc;
+PyObject *_pPyobStringIO;
+
+int PythonErrorMessage(){
+// Py_Initialize should have been done by now.....
+PyObject *modStringIO = NULL;
+PyObject *obFuncStringIO = NULL;
+
+// Import cStringIO module
+modStringIO = PyImport_ImportModule("cStringIO");
+if(PyErr_Occurred() || modStringIO == NULL){
+printf("pyParserEvaluator::Init::PyImport cStringIO failed:");
+PyErr_Print();
+goto PY_INIT_ERR;
+}
+// get StringIO constructor
+obFuncStringIO = PyObject_GetAttrString(modStringIO, "StringIO");
+if(PyErr_Occurred() || obFuncStringIO == NULL){
+printf("pyParserEvaluator::Init: cant find cStringIO.StringIO:");
+PyErr_Print();
+goto PY_INIT_ERR;
+}
+// Construct cStringIO object
+_pPyobStringIO = PyObject_CallObject(obFuncStringIO, NULL);
+if(PyErr_Occurred() || _pPyobStringIO==NULL){
+printf("pyParserEvaluator::Init: cStringIO.StringIO() failed:");
+PyErr_Print();
+goto PY_INIT_ERR;
+}
+// get getvalue() method in StringIO instance
+_pPyGetValFunc = PyObject_GetAttrString(_pPyobStringIO,
+"getvalue");
+if(PyErr_Occurred() || _pPyGetValFunc==NULL){
+printf("pyParserEvaluator::Init: cant find getvalue function:");
+PyErr_Print();
+goto PY_INIT_ERR;
+}
+// try assigning this object to sys.stderr
+int ret = PySys_SetObject("stderr", _pPyobStringIO);
+if(ret != 0){
+printf("failed to assign _pPyobStringIO to stderr\n");
+goto PY_INIT_ERR;
+}
+return ret;
+
+PY_INIT_ERR:
+Py_XDECREF(modStringIO);
+Py_XDECREF(obFuncStringIO);
+Py_XDECREF(_pPyobStringIO);
+Py_XDECREF(_pPyGetValFunc);
+return ret;
+}
+
+char* pErrorString = NULL;
+
+int _getPythonErrorMessage()
+{
+// call getvalue() method in StringIO instance
+int ret = 0;
+PyObject *obResult=NULL;
+char *sresult = NULL;
+obResult = PyObject_CallObject(_pPyGetValFunc, NULL);
+if(PyErr_Occurred() || obResult==NULL){
+printf("getvalue() failed\n");
+ret = -1;
+goto CLEAN_AND_RETURN;
+}
+// did getvalue return a string?
+if(!PyString_Check(obResult)){
+printf("getvalue() did not return error string\n");
+ret = -1;
+goto CLEAN_AND_RETURN;
+}
+// retrieve error message string from this object
+if(NULL != (sresult = PyString_AsString(obResult))){
+pErrorString = strdup(sresult);
+} else {
+ret = -1;
+goto CLEAN_AND_RETURN;
+}
+return(ret);
+
+CLEAN_AND_RETURN:
+Py_XDECREF(obResult);
+return(ret);
+}
 
 wxWindow* CConsoleCanvas::DoPythonStuff(wxWindow* parent)
 {
@@ -115,6 +207,8 @@ wxWindow* CConsoleCanvas::DoPythonStuff(wxWindow* parent)
     PyObject* func = PyDict_GetItemString(globals, "makeWindow");
     wxASSERT(PyCallable_Check(func));
 
+	PythonErrorMessage();
+
     // Now build an argument tuple and call the Python function.  Notice the
     // use of another wxPython API to take a wxWindows object and build a
     // wxPython object that wraps it.
@@ -126,7 +220,12 @@ wxWindow* CConsoleCanvas::DoPythonStuff(wxWindow* parent)
 
     // Was there an exception?
     if (! result)
-        PyErr_Print();
+	{
+		PyErr_Print();
+		_getPythonErrorMessage();
+		std::ofstream ofs(_T("c:\\pyerr.txt"));
+		ofs<<pErrorString;
+	}
     else {
         // Otherwise, get the returned window out of Python-land and
         // into C++-ville...
