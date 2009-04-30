@@ -66,6 +66,20 @@ static PyObject* NewLine(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* NewLine3d(PyObject* self, PyObject* args)
+{
+	double s[3]={0,0,0};
+	double e[3]={0,0,0};
+	if (!PyArg_ParseTuple(args, "dddddd", &s[0],&s[1],&s[2],&e[0],&e[1],&e[2])) return NULL;
+
+	heeksCAD->GetMainObject()->Add(heeksCAD->NewLine(s,e),NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
 static PyObject* NewCircle(PyObject* self, PyObject* args)
 {
 	double c[3]={0,0,0};
@@ -80,14 +94,15 @@ static PyObject* NewCircle(PyObject* self, PyObject* args)
 	return pValue;
 }
 
-static PyMethodDef KurveMethods[] = {
-	{"line", NewLine, METH_VARARGS , ""},
-	{"circle", NewCircle, METH_VARARGS , ""},
+static PyMethodDef HeeksPythonMethods[] = {
+	{"line", NewLine, METH_VARARGS , "line(start_x, start_y, end_x, end_y)"},
+	{"line3d", NewLine3d, METH_VARARGS , "line3d(start_x, start_y, start_z, end_x, end_y, end_z)"},
+	{"circle", NewCircle, METH_VARARGS , "circle(centre_x, centre_y, radius)"},
 	{NULL, NULL, 0, NULL}
 };
 
 PyMODINIT_FUNC
 initHeeksPython(void)
 {
-	Py_InitModule("HeeksPython", KurveMethods);
+	Py_InitModule("HeeksPython", HeeksPythonMethods);
 }
