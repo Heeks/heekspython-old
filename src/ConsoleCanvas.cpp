@@ -6,11 +6,17 @@
 #include <wx/fileconf.h>
 #include "ConsoleCanvas.h"
 
-//debug does horrible things to python
-//#undef _DEBUG
+#ifdef _DEBUG
+#undef _DEBUG
 #include <Python.h>
+#include <wx/wxPython/wxPython.h>
+#define _DEBUG
+#else
+#include <Python.h>
+
 // Import Python and wxPython headers
 #include <wx/wxPython/wxPython.h>
+#endif
 
 
 BEGIN_EVENT_TABLE(CConsoleCanvas, wxScrolledWindow)

@@ -17,10 +17,10 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)\..\..\"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="2"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;d:\Python-2.6.2\PC&quot;;&quot;d:\Python-2.6.2\Include&quot;;&quot;D:\wxPython-src-2.8.9.2\lib\vc_dll\mswud&quot;;&quot;D:\wxPython-src-2.8.9.2\include&quot;;&quot;D:\wxPython-src-2.8.9.2\wxPython\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_UNICODE;UNICODE;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;HEEKSCAD;STRICT"
+				AdditionalIncludeDirectories="&quot;$(PYTHON_INCLUDE)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;&quot;$(WXPYTHONSRC)\wxPython\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_UNICODE;UNICODE;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;STRICT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -59,9 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28ud.lib wxmsw28ud_core.lib wxmsw28ud_aui.lib wxmsw28ud_gl.lib"
-				OutputFile="$(OutDir)\$(ProjectName)_d.pyd"
-				AdditionalLibraryDirectories="&quot;d:\Python-2.6.2\PCbuild\&quot;;&quot;d:\wxPython-src-2.8.9.2\lib\vc_dll\&quot;"
+				AdditionalDependencies="wxbase28d.lib wxmsw28d_core.lib wxmsw28d_aui.lib wxmsw28d_gl.lib $(PYTHON_LIB)"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -91,8 +91,8 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="2"
+			ConfigurationType="2"
+			CharacterSet="0"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -114,7 +114,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;d:\Python-2.6.2\PC&quot;;&quot;d:\Python-2.6.2\Include&quot;;&quot;D:\wxPython-src-2.8.9.2\lib\vc_dll\mswud&quot;;&quot;D:\wxPython-src-2.8.9.2\include&quot;;&quot;D:\wxPython-src-2.8.9.2\wxPython\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(PYTHON_INCLUDE)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;&quot;$(WXPYTHONSRC)\wxPython\include&quot;"
+				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_SECURE_ATL =0"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -131,8 +132,156 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28ud.lib wxmsw28ud_core.lib"
-				AdditionalLibraryDirectories="&quot;d:\Python-2.6.2\PCbuild\&quot;;&quot;d:\wxPython-src-2.8.9.2\lib\vc_dll\&quot;"
+				AdditionalDependencies="wxbase28.lib wxmsw28_core.lib wxmsw28_aui.lib wxmsw28_gl.lib $(PYTHON_LIB)"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;"
+				GenerateDebugInformation="true"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Unicode Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(PYTHON_INCLUDE)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;&quot;$(WXPYTHONSRC)\wxPython\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_UNICODE;UNICODE;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;STRICT"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				WarningLevel="3"
+				DebugInformationFormat="4"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="wxbase28ud.lib wxmsw28ud_core.lib wxmsw28ud_aui.lib wxmsw28ud_gl.lib $(PYTHON_LIB)"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;"
+				GenerateDebugInformation="true"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Unicode Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(PYTHON_INCLUDE)&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;&quot;$(WXPYTHONSRC)\wxPython\include&quot;"
+				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_SECURE_ATL =0"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="wxbase28u.lib wxmsw28u_core.lib wxmsw28u_aui.lib wxmsw28u_gl.lib $(PYTHON_LIB)"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

@@ -2,7 +2,7 @@
 
 // defines global variables and functions
 
-#include "../../interface/HeeksCADInterface.h"
+#include "interface/HeeksCADInterface.h"
 
 extern CHeeksCADInterface* heeksCAD;
 

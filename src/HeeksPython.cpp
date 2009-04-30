@@ -10,9 +10,9 @@
 #include <wx/stdpaths.h>
 #include <wx/dynlib.h>
 #include <wx/aui/aui.h>
-#include "../../interface/PropertyString.h"
-#include "../../interface/Observer.h"
-#include "../../interface/ToolImage.h"
+#include "interface/PropertyString.h"
+#include "interface/Observer.h"
+#include "interface/ToolImage.h"
 #include "ConsoleCanvas.h"
 #include "PythonConfig.h"
 

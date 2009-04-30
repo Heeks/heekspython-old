@@ -8,11 +8,17 @@
 
 #include "PythonInterface.h"
 #include "Interface.h"
-#include "../../interface/HeeksCADInterface.h"
-#include "../../interface/HeeksObj.h"
+#include "interface/HeeksCADInterface.h"
+#include "interface/HeeksObj.h"
 #include <set>
 
+#ifdef _DEBUG
+#undef _DEBUG
 #include <Python.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#endif
 
 extern CHeeksCADInterface *heeksCAD;
 extern CHeeksPythonApp *theApp;
