@@ -15,7 +15,7 @@
 #include <wx/wx.h>
 
 #include "HeeksPython.h"
-#include "../../interface/strconv.h"
+#include "interface/strconv.h"
 
 // TODO: reference additional headers your program requires here
 
