@@ -1,0 +1,32 @@
+Source: heekspython
+Priority: extra
+Maintainer: Joachim Steiger <ubuntu@hyte.de>
+Build-Depends: debhelper (>= 6), libwxgtk2.8-dev, libwxbase2.8-dev, libgtkglext1-dev, heekscad
+Standards-Version: 3.7.3
+Section: libs
+Homepage: http://code.google.com/p/heekspython/
+
+#Package: heekspython-dev
+#Section: libdevel
+#Architecture: any
+#Depends: heekspython0 (= ${binary:Version})
+#Description: This is a plugin to enable a python console in HeeksCAD.
+# This is a plugin to enable python interaction in HeeksCAD.
+# Users can script actions, create/modify objects, and my personal favorite, create parametric geometry.
+# Importing of any python library is possible, so you could even do something weird like hook HeeksCAD up to a network socket.
+# Be creative!
+# .
+#  Homepage: http://code.google.com/p/heekspython/
+
+Package: heekspython0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, heekscad, python-wxgtk2.8
+Description: This is a plugin to enable a python console in HeeksCAD.
+ This is a plugin to enable python interaction in HeeksCAD.
+ Users can script actions, create/modify objects, and my personal favorite, create parametric geometry.
+ Importing of any python library is possible, so you could even do something weird like hook HeeksCAD up to a network socket.
+ Be creative!
+ .
+  Homepage: http://code.google.com/p/heekspython/
+

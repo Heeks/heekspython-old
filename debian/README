@@ -1,0 +1,6 @@
+The Debian Package heekspython
+----------------------------
+
+  After installing the plugin needs to be 'activated' first in HeeksCAD by adding a new plugin and selecting the .so in /usr/lib/heekspython/
+
+ -- Joachim Steiger <ubuntu@hyte.de>  Thu, 28 May 2009 09:08:50 +0200
