@@ -26,5 +26,17 @@ public:
 	wxString GetDllFolder();
 };
 
+class MyApp : public wxApp
+{
+ 
+ public:
+ 
+   virtual bool OnInit(void);
+   wxString GetResFolder();
+ 
+ };
+ 
 extern CHeeksPythonApp *theApp;
+
+DECLARE_APP(MyApp)
 

@@ -14,6 +14,10 @@
 
 #include <wx/wx.h>
 
+#include <wx/stdpaths.h>
+#include <wx/dynlib.h>
+#include <wx/aui/aui.h>
+
 #include "HeeksPython.h"
 #include "interface/strconv.h"
 
