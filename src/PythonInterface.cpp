@@ -273,7 +273,7 @@ static PyObject* Add(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
     obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	group = (HeeksObj*)heeksCAD->GetIDObject(pygroup>>16,pygroup&0xFFFF);
-	obj->m_owner->Remove(obj);
+	obj->Owner()->Remove(obj);
 	group->Add(obj,NULL);
 	heeksCAD->Repaint();
 	
