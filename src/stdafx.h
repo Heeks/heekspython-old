@@ -18,8 +18,15 @@
 #include <wx/dynlib.h>
 #include <wx/aui/aui.h>
 
+extern "C" {
+#include <GL/gl.h>
+#include <GL/glu.h>
+}
+
 #include "HeeksPython.h"
 #include "interface/strconv.h"
+
+
 
 // TODO: reference additional headers your program requires here
 
