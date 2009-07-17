@@ -12,7 +12,6 @@
 #include <wx/aui/aui.h>
 #include "interface/PropertyString.h"
 #include "interface/Observer.h"
-#include "interface/ToolImage.h"
 #include "ConsoleCanvas.h"
 #include "PythonConfig.h"
 
@@ -86,7 +85,7 @@ void CHeeksPythonApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 
 	// add tick boxes for them all on the view menu
 	wxMenu* view_menu = heeksCAD->GetWindowMenu();
-	heeksCAD->AddMenuItem(view_menu, _T("Console"), ToolImage(_("new")), OnConsole, OnUpdateConsole,0,true);
+	heeksCAD->AddMenuItem(view_menu, _T("Console"), wxBitmap(), OnConsole, OnUpdateConsole,0,true);
 	heeksCAD->RegisterHideableWindow(m_console);
 
 	// add object reading functions

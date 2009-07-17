@@ -185,18 +185,6 @@
 				RelativePath=".\PythonInterface.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\interface\ToolImage.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="C:\heekscad\HeeksPython\src"
-					/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
