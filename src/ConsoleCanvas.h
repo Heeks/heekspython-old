@@ -5,7 +5,6 @@
 
 #include <Python.h>
 
-static	wxWindow *m_parent;
 class CConsoleCanvas: public wxScrolledWindow
 {
 private:

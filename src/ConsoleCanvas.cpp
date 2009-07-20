@@ -10,6 +10,7 @@
 #include <Python.h>
 #include <wx/wxPython/wxPython.h>
 
+wxWindow *m_window;
 
 BEGIN_EVENT_TABLE(CConsoleCanvas, wxScrolledWindow)
     EVT_SIZE(CConsoleCanvas::OnSize)
@@ -20,7 +21,7 @@ CConsoleCanvas::CConsoleCanvas(wxWindow* parent)
                            wxHSCROLL | wxVSCROLL | wxNO_FULL_REPAINT_ON_RESIZE)
 {
 	m_textCtrl=0;
-	m_parent = parent;
+	m_window = parent;
 //	DoPythonStuff(this);
 //	m_textCtrl = new wxTextCtrl( this, 100, _T(""),	wxPoint(180,170), wxSize(200,70), wxTE_MULTILINE | wxTE_DONTWRAP);
 

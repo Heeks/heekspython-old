@@ -19,6 +19,7 @@
 
 extern CHeeksCADInterface *heeksCAD;
 extern CHeeksPythonApp *theApp;
+extern wxWindow* m_window;
 
 class Property;
 
@@ -225,7 +226,7 @@ static PyObject* NewSketch(PyObject* self, PyObject* args)
 static PyObject* WxHandle(PyObject* self, PyObject* args)
 {
 
-	PyObject *pValue = wxPyMake_wxObject(m_parent, false);
+	PyObject *pValue = wxPyMake_wxObject(m_window, false);
 	Py_INCREF(pValue);
 	return pValue;
 }
