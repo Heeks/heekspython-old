@@ -111,6 +111,27 @@ static PyObject* NewArc(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+//added by DF- arc2 function using start point, end point,center point, uv
+//NewArc(const double* s, const double* e, const double* c, const double* up)
+static PyObject* NewArc2(PyObject* self, PyObject* args)
+{
+	double c[3];
+	double u[3];
+	double s[3];
+    double e[3];
+
+    if (!PyArg_ParseTuple( args, "dddddddddddd",&s[0],&s[1],&s[2],&e[0],&e[1],&e[2],&c[0],&c[1],&c[2],&u[0],&u[1],&u[2])) return NULL;
+
+	lastobj = heeksCAD->NewArc(s,e,c,u);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+
 
 static PyObject* NewCuboid(PyObject* self, PyObject* args)
 {
@@ -385,6 +406,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"linearc2wire", LineArc2Wire, METH_VARARGS , "linearc2wire(linearc)"},
 	{"pipe", Pipe, METH_VARARGS , "pipe(wire,sketch)"},
 	{"arc", NewArc, METH_VARARGS, "arc(cx,cy,cz,radius,start_a,end_a,ux,uy,uz)"},
+	{"arc2", NewArc2, METH_VARARGS, "arc(sx,sy,sz,ex,ey,ez,cx,cy,cz,ux,uy,uz)"},
 	{"line", NewLine, METH_VARARGS , "line(start_x, start_y, end_x, end_y)"},
 	{"line3d", NewLine3d, METH_VARARGS , "line3d(start_x, start_y, start_z, end_x, end_y, end_z)"},
 	{"circle", NewCircle, METH_VARARGS , "circle(centre_x, centre_y, radius)"},
