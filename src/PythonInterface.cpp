@@ -10,10 +10,12 @@
 #include "Interface.h"
 #include "interface/HeeksCADInterface.h"
 #include "interface/HeeksObj.h"
+#include "ConsoleCanvas.h"
 #include <set>
 
 
 #include <Python.h>
+#include <wx/wxPython/wxPython.h>
 
 extern CHeeksCADInterface *heeksCAD;
 extern CHeeksPythonApp *theApp;
@@ -220,6 +222,14 @@ static PyObject* NewSketch(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* WxHandle(PyObject* self, PyObject* args)
+{
+
+	PyObject *pValue = wxPyMake_wxObject(m_parent, false);
+	Py_INCREF(pValue);
+	return pValue;
+}
+
 static PyObject* GetLastObj(PyObject* self, PyObject* args)
 {
 	return PyInt_FromLong(lastobj->m_id | lastobj->GetIDGroupType()<<16);
@@ -401,6 +411,7 @@ static PyObject* SetColor(PyObject* self, PyObject* args)
 
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
+	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
 	{"extrude", Extrude, METH_VARARGS , "extrude(sketch,height)"},
 	{"reorder", Reorder, METH_VARARGS , "reorder(sketch)"},
 	{"linearc2wire", LineArc2Wire, METH_VARARGS , "linearc2wire(linearc)"},

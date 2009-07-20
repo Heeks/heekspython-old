@@ -20,6 +20,7 @@ CConsoleCanvas::CConsoleCanvas(wxWindow* parent)
                            wxHSCROLL | wxVSCROLL | wxNO_FULL_REPAINT_ON_RESIZE)
 {
 	m_textCtrl=0;
+	m_parent = parent;
 //	DoPythonStuff(this);
 //	m_textCtrl = new wxTextCtrl( this, 100, _T(""),	wxPoint(180,170), wxSize(200,70), wxTE_MULTILINE | wxTE_DONTWRAP);
 
