@@ -11,6 +11,7 @@
 #include "interface/HeeksCADInterface.h"
 #include "interface/HeeksObj.h"
 #include "ConsoleCanvas.h"
+//#include "src/PointDrawing.h"
 #include <set>
 
 
@@ -51,6 +52,27 @@ void OnFrameDelete()
 }
 
 HeeksObj* lastobj;
+
+static PyObject* NewPoint(PyObject* self, PyObject* args)
+{
+//from PointDrawing.cpp:
+//temp_object = new HPoint(end.m_point, &wxGetApp().current_color);
+//if(temp_object)temp_object_in_list.push_back(temp_object);
+
+	const double p[3]={0,0,0};
+	if (!PyArg_ParseTuple(args, "ddd", &p[0],&p[1],&p[2])) return NULL;
+
+	lastobj = heeksCAD->NewPoint(p);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+
+
 
 static PyObject* NewLine(PyObject* self, PyObject* args)
 {
@@ -415,6 +437,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
 	{"extrude", Extrude, METH_VARARGS , "extrude(sketch,height)"},
 	{"reorder", Reorder, METH_VARARGS , "reorder(sketch)"},
+	{"point", NewPoint, METH_VARARGS , "point(x,y,z)"},
 	{"linearc2wire", LineArc2Wire, METH_VARARGS , "linearc2wire(linearc)"},
 	{"pipe", Pipe, METH_VARARGS , "pipe(wire,sketch)"},
 	{"arc", NewArc, METH_VARARGS, "arc(cx,cy,cz,radius,start_a,end_a,ux,uy,uz)"},
