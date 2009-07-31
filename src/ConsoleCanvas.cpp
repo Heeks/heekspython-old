@@ -7,8 +7,15 @@
 #include "ConsoleCanvas.h"
 
 
+#ifdef _DEBUG
+#undef _DEBUG
 #include <Python.h>
 #include <wx/wxPython/wxPython.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#include <wx/wxPython/wxPython.h>
+#endif
 
 wxWindow *m_window;
 
@@ -67,6 +74,7 @@ import wx.py\n\
 sys.path.append('.')\n\
 output = wx.PyOnDemandOutputWindow()\n\
 sys.stdin = sys.stderr = output\n\
+app = wx.App()\n\
 def makeWindow(parent,style=wx.TE_MULTILINE | wx.TE_DONTWRAP):\n\
     return wx.py.shell.Shell(parent)\n\
 ";
