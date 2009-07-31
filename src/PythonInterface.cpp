@@ -376,6 +376,29 @@ static PyObject* Fuse(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+
+static PyObject* Common(PyObject* self, PyObject* args)
+{
+	int pyobj1,pyobj2;
+
+    if (!PyArg_ParseTuple( args, "ii", &pyobj1, &pyobj2)) return NULL;
+
+    // Convert the PyCObject to a void pointer:
+	std::list<HeeksObj*> list;
+	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
+	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
+	lastobj = heeksCAD->Common(list);
+	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+	
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+
+
 static PyObject* LineArc2Wire(PyObject* self, PyObject* args)
 {
 	int pyobj;
@@ -471,6 +494,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"group", NewGroup, METH_VARARGS , "group()"},
 	{"add", Add, METH_VARARGS, "add(group,obj)"},
 	{"fuse",Fuse, METH_VARARGS, "fuse(obj1,obj2)"},
+	{"common",Common, METH_VARARGS, "common(obj1,obj2)"},
 	{"cut",Cut, METH_VARARGS, "cut(obj1,obj2)"},
 	{"getlastobj", GetLastObj, METH_VARARGS , "getlastobj()"},
 	{"rotate",Rotate, METH_VARARGS , "rotate(object,p_x,p_y,p_z,u_x,u_y,u_z,r)"},
