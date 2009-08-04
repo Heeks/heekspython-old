@@ -67,6 +67,7 @@ bool CConsoleCanvas::Init_wxPython()
     return true;
 }
 
+#ifdef WIN32
 char* python_code2 = "\
 import sys\n\
 import wx\n\
@@ -78,6 +79,18 @@ app = wx.App()\n\
 def makeWindow(parent,style=wx.TE_MULTILINE | wx.TE_DONTWRAP):\n\
     return wx.py.shell.Shell(parent)\n\
 ";
+#else
+char* python_code2 = "\
+import sys\n\
+import wx\n\
+import wx.py\n\
+sys.path.append('.')\n\
+output = wx.PyOnDemandOutputWindow()\n\
+sys.stdin = sys.stderr = output\n\
+def makeWindow(parent,style=wx.TE_MULTILINE | wx.TE_DONTWRAP):\n\
+    return wx.py.shell.Shell(parent)\n\
+";
+#endif
 
 wxWindow* CConsoleCanvas::DoPythonStuff(wxWindow* parent)
 {
