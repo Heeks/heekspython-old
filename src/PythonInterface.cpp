@@ -245,7 +245,7 @@ static PyObject* Reorder(PyObject* self, PyObject* args)
 
     // Convert the PyCObject to a void pointer:
 	obj = (HeeksObj*)heeksCAD->GetIDObject(oid>>16,oid&0xFFFF);
-	heeksCAD->ReOrderSketch(obj,SketchOrderTypeCloseCW,false);
+	heeksCAD->ReOrderSketch(obj,SketchOrderTypeCloseCW);
 	heeksCAD->Repaint();
 
 	PyObject *pValue = Py_None;
