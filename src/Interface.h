@@ -11,7 +11,7 @@ extern "C"{
 #endif
 
 void HEEKSPYTHON_EXPORT OnStartUp(CHeeksCADInterface* h, const wxString& dll_path);
-void HEEKSPYTHON_EXPORT OnNewOrOpen(int open);
+void HEEKSPYTHON_EXPORT OnNewOrOpen(int open, int res);
 void HEEKSPYTHON_EXPORT GetOptions(void(*callbackfunc)(Property*));
 void HEEKSPYTHON_EXPORT OnFrameDelete();
 }
