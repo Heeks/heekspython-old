@@ -11,17 +11,32 @@ else
   heekspathmessage = 
 endif
 
-CCFLAGS=-Wall -fPIC -g -I "./" $(WXCFLAGS) -I$(HEEKSCADPATH) -I/usr/include/GL -I/usr/include/python2.5 -I/usr/include/opencascade/ -D__WXGTK__ -DHEEKSCNC -DUNICODE -DWXUSINGDLL -lstdc++ -DWXUSINGDLL -lwx2.8 
+ifeq ($(strip $(PYTHONCFLAGS)),)
+  PYTHONCFLAGS=$(shell python-config --includes)
+endif
+
+ifneq ($(strip $(CASROOT)),)
+    CASINCPATH=$(CASROOT)
+else
+    CASINCPATH=/usr/include/opencascade
+endif
+
+
+CCFLAGS=-Wall -fPIC -g -I "./" $(WXCFLAGS) -I$(HEEKSCADPATH) -I/usr/include/GL -I$(PYTHONCFLAGS) -I$(CASROOT) -D__WXGTK__ -DHEEKSCNC -DUNICODE -DWXUSINGDLL -lstdc++ -DWXUSINGDLL -lwx2.8 
 
 #WX_LIB_LETTER=d
 WX_LIB_LETTER=u
+
+ifeq ($(strip $(PYTHONLIBS)),)
+  PYTHONLIBS=$(shell python-config --ldflags)
+endif
 
 OBJECTS=ConsoleCanvas.o HeeksPython.o PythonInterface.o 
 
 SHARED_LIBRARY=../HeeksPython.so
 
 ${SHARED_LIBRARY}: $(heekspathmessage) ${OBJECTS}
-	gcc -shared -fPIC -Wl,-soname,HeeksPython.so -lpython2.5 -Xlinker -export-dynamic -o ${SHARED_LIBRARY} ${OBJECTS} -lstdc++ -lGLU ${WXCFLAGS} -pthread   -lwx_gtk2u_richtext-2.8 -lwx_gtk2u_aui-2.8 -lwx_gtk2u_xrc-2.8 -lwx_gtk2u_qa-2.8 -lwx_gtk2u_html-2.8 -lwx_gtk2u_adv-2.8 -lwx_gtk2u_core-2.8 -lwx_baseu_xml-2.8 -lwx_baseu_net-2.8 -lwx_baseu-2.8  
+	gcc -shared -fPIC -Wl,-soname,HeeksPython.so $(PYTHONLIBS) -Xlinker -export-dynamic -o ${SHARED_LIBRARY} ${OBJECTS} -lstdc++ -lGLU ${WXCFLAGS} -pthread   -lwx_gtk2u_richtext-2.8 -lwx_gtk2u_aui-2.8 -lwx_gtk2u_xrc-2.8 -lwx_gtk2u_qa-2.8 -lwx_gtk2u_html-2.8 -lwx_gtk2u_adv-2.8 -lwx_gtk2u_core-2.8 -lwx_baseu_xml-2.8 -lwx_baseu_net-2.8 -lwx_baseu-2.8  
 
 #print a message if HEEKSCADPATH is not set
 #use escape sequences for colors.  Z gets translated to \033
