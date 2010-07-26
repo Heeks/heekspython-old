@@ -57,5 +57,5 @@ PythonInterface.o: PythonInterface.cpp
 
 
 clean:
-	-rm $(SHARED_LIBRARY) $(OBJECTS)
+	-rm -f $(SHARED_LIBRARY) $(OBJECTS)
 
