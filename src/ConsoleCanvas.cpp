@@ -68,7 +68,7 @@ bool CConsoleCanvas::Init_wxPython()
 }
 
 #ifdef WIN32
-char* python_code2 = "\
+static const char* python_code2 = "\
 import sys\n\
 import wx\n\
 import wx.py\n\
@@ -80,7 +80,7 @@ def makeWindow(parent,style=wx.TE_MULTILINE | wx.TE_DONTWRAP):\n\
     return wx.py.shell.Shell(parent)\n\
 ";
 #else
-char* python_code2 = "\
+static const char* python_code2 = "\
 import sys\n\
 import wx\n\
 import wx.py\n\
