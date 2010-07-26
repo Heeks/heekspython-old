@@ -23,7 +23,9 @@ else
 endif
 
 
-CCFLAGS=-Wall -fPIC -g -I "./" $(WXCFLAGS) -I$(HEEKSCADPATH) -I/usr/include/GL -I$(PYTHONCFLAGS) -I$(CASROOT) -D__WXGTK__ -DHEEKSCNC -DUNICODE -DWXUSINGDLL -DWXUSINGDLL
+CCFLAGS=-Wall -fPIC -g -I ./ $(WXCFLAGS) \
+  -I$(HEEKSCADPATH) -I/usr/include/GL -I$(PYTHONCFLAGS) -I$(CASROOT) \
+  -D__WXGTK__ -DHEEKSCNC -DUNICODE -DWXUSINGDLL -DWXUSINGDLL
 
 #WX_LIB_LETTER=d
 WX_LIB_LETTER=u
@@ -36,8 +38,10 @@ OBJECTS=ConsoleCanvas.o HeeksPython.o PythonInterface.o
 
 SHARED_LIBRARY=../HeeksPython.so
 
-${SHARED_LIBRARY}: $(heekspathmessage) ${OBJECTS}
-	gcc -shared -fPIC -Wl,-soname,HeeksPython.so $(PYTHONLIBS) -Xlinker -export-dynamic -o ${SHARED_LIBRARY} ${OBJECTS} -lstdc++ -lGLU ${WXLDFLAGS}
+$(SHARED_LIBRARY): $(heekspathmessage) $(OBJECTS)
+	gcc -shared -fPIC -Wl,-soname,HeeksPython.so $(PYTHONLIBS) \
+	  -Xlinker -export-dynamic -o $(SHARED_LIBRARY) $(OBJECTS) \
+	  -lstdc++ -lGLU $(WXLDFLAGS)
 
 #print a message if HEEKSCADPATH is not set
 #use escape sequences for colors.  Z gets translated to \033
@@ -45,13 +49,13 @@ message:
 	@echo Z[1mEnvironment variable HEEKSCADPATH not set. Assuming Z[32m../..Z[37mZ[0m | tr Z '\033'
 
 ConsoleCanvas.o: ConsoleCanvas.cpp
-	gcc -c $? ${CCFLAGS} -o $@
+	gcc -c $? $(CCFLAGS) -o $@
 HeeksPython.o: HeeksPython.cpp
-	gcc -c $? ${CCFLAGS} -o $@
+	gcc -c $? $(CCFLAGS) -o $@
 PythonInterface.o: PythonInterface.cpp
-	gcc -c $? ${CCFLAGS} -o $@
+	gcc -c $? $(CCFLAGS) -o $@
 
 
 clean:
-	-rm ${SHARED_LIBRARY} ${OBJECTS}
+	-rm $(SHARED_LIBRARY) $(OBJECTS)
 
