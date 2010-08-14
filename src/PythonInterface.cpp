@@ -307,7 +307,7 @@ static PyObject* Extrude(PyObject* self, PyObject* args)
 
     // Convert the PyCObject to a void pointer:
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
-	lastobj = heeksCAD->ExtrudeSketch(obj,h);
+	lastobj = heeksCAD->ExtrudeSketch(obj,h,true);
 	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 
