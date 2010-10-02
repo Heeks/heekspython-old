@@ -298,6 +298,7 @@ static PyObject* Rotate(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+
 static PyObject* Extrude(PyObject* self, PyObject* args)
 {
 	HeeksObj *obj;
@@ -496,6 +497,26 @@ static PyObject* SetColor(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* Fillet(PyObject* self, PyObject* args)
+{ //the lines definitely need to be trimmed first
+	HeeksObj *obj;
+	int pyobj = 0;
+	double p[3];
+	double r;
+
+    if (!PyArg_ParseTuple( args, "idddd", &pyobj,&p[0], &p[1], &p[2], &r)) return NULL;
+	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
+	heeksCAD->FilletSketchAtPoint(obj,p,r);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+
+}
+
+
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
 	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
@@ -513,7 +534,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"cuboid", NewCuboid, METH_VARARGS , "cuboid(centre_x, centre_y, centre_z, length, width, height)"},
 	{"cylinder", NewCylinder, METH_VARARGS , "cylinder(centre_x, centre_y, centre_z, radius, height)"},
 	{"cone", NewCone, METH_VARARGS , "cylinder(centre_x, centre_y, centre_z, radius1, radius2, height)"},
-    {"sphere",NewSphere,METH_VARARGS ,"sphere(centre_x, centre_y, centre_z, radius)"},
+    	{"sphere",NewSphere,METH_VARARGS ,"sphere(centre_x, centre_y, centre_z, radius)"},
 	{"group", NewGroup, METH_VARARGS , "group()"},
 	{"add", Add, METH_VARARGS, "add(group,obj)"},
 	{"fuse",Fuse, METH_VARARGS, "fuse(obj1,obj2)"},
@@ -523,6 +544,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"rotate",Rotate, METH_VARARGS , "rotate(object,p_x,p_y,p_z,u_x,u_y,u_z,r)"},
 	{"translate",Translate, METH_VARARGS , "translate(object,p_x,p_y,p_z)"},
 	{"setcolor",SetColor, METH_VARARGS, "setcolor(int r, int b, int g)"},
+	{"fillet" ,Fillet, METH_VARARGS, "fillet(obj,point,radius)"},
 	{NULL, NULL, 0, NULL}
 };
 
