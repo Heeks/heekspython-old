@@ -1,5 +1,5 @@
 // HeeksPython.cpp
-
+#include <Python.h>
 #include "stdafx.h"
 
 #ifdef WIN32
@@ -15,7 +15,7 @@
 #include <set>
 
 
-#include <Python.h>
+
 #include <wx/wxPython/wxPython.h>
 
 extern CHeeksCADInterface *heeksCAD;
@@ -274,6 +274,7 @@ static PyObject* WxHandle(PyObject* self, PyObject* args)
 
 static PyObject* GetLastObj(PyObject* self, PyObject* args)
 {
+	//return PyInt_FromLong(lastobj->m_id | lastobj->GetIDGroupType()<<16);
 	return PyInt_FromLong(lastobj->m_id | lastobj->GetIDGroupType()<<16);
 }
 
@@ -308,13 +309,34 @@ static PyObject* Extrude(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	lastobj = heeksCAD->ExtrudeSketch(obj,h,true);
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
 	return pValue;
 }
+
+
+static PyObject* Revolve(PyObject* self, PyObject* args)
+{
+	HeeksObj *obj;
+	int pyobj = 0;
+	double a;
+
+    if (!PyArg_ParseTuple( args, "id", &pyobj,&a)) return NULL;
+
+    // Convert the PyCObject to a void pointer:
+	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
+	lastobj = heeksCAD->RevolveSketch(obj,a,true);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
 
 
 static PyObject* Translate(PyObject* self, PyObject* args)
@@ -367,7 +389,7 @@ static PyObject* Fuse(PyObject* self, PyObject* args)
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
 	lastobj = heeksCAD->Fuse(list);
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 	
 
@@ -388,7 +410,7 @@ static PyObject* Common(PyObject* self, PyObject* args)
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
 	lastobj = heeksCAD->Common(list);
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 	
 
@@ -431,7 +453,7 @@ static PyObject* Cut(PyObject* self, PyObject* args)
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
 	lastobj = heeksCAD->Cut(list);
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 	
 
@@ -451,7 +473,7 @@ static PyObject* Pipe(PyObject* self, PyObject* args)
 	wire = (HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF);
 	profile = (HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF);
 	lastobj = heeksCAD->MakePipe(wire,profile);
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 	
 
@@ -478,6 +500,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
 	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
 	{"extrude", Extrude, METH_VARARGS , "extrude(sketch,height)"},
+	{"revolve", Revolve, METH_VARARGS , "revolve(sketch,angle)"},
 	{"reorder", Reorder, METH_VARARGS , "reorder(sketch)"},
 	{"point", NewPoint, METH_VARARGS , "point(x,y,z)"},
 	{"linearc2wire", LineArc2Wire, METH_VARARGS , "linearc2wire(linearc)"},
