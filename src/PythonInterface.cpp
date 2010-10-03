@@ -516,6 +516,22 @@ static PyObject* Fillet(PyObject* self, PyObject* args)
 
 }
 
+static PyObject* NewCoordinateSystem(PyObject* self, PyObject* args)
+{
+	double o[3]={0,0,0};
+	double x[3]={1, 0, 0};
+	double y[3]={0, 1, 0};
+	if (!PyArg_ParseTuple(args, "ddddddddd",  &o[0],&o[1],&o[2],&x[0],&x[1],&x[2],&y[0],&y[1],&y[2])) return NULL;
+	lastobj = heeksCAD->NewCoordinateSystem(o,x,y);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+
 
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
@@ -545,6 +561,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"translate",Translate, METH_VARARGS , "translate(object,p_x,p_y,p_z)"},
 	{"setcolor",SetColor, METH_VARARGS, "setcolor(int r, int b, int g)"},
 	{"fillet" ,Fillet, METH_VARARGS, "fillet(obj,point,radius)"},
+	{"coordinate" ,NewCoordinateSystem, METH_VARARGS, "coordinate(position,x_vec,y_vec)"},
 	{NULL, NULL, 0, NULL}
 };
 
