@@ -1,3 +1,7 @@
+PREFIX	= /usr/local
+
+
+
 WXCFLAGS=$(shell wx-config --cflags)
 WXLDFLAGS=$(shell wx-config --libs --gl-libs)
 
@@ -8,6 +12,13 @@ WXLDFLAGS=$(shell wx-config --libs --gl-libs)
 ifeq ($(strip $(HEEKSCADPATH)),)
   heekspathmessage = message
   HEEKSCADPATH = ../..
+else
+  heekspathmessage = 
+endif
+
+ifeq ($(strip $(HEEKSCNCPATH)),)
+  heekspathmessage = message
+  HEEKSCNCPATH = ../..
 else
   heekspathmessage = 
 endif
@@ -24,7 +35,7 @@ endif
 
 
 CCFLAGS=-Wall -fPIC -g -I ./ $(WXCFLAGS) \
-  -I$(HEEKSCADPATH) -I/usr/include/GL -I$(PYTHONCFLAGS) -I$(CASROOT) \
+  -I$(HEEKSCADPATH) -I$(HEEKSCNCPATH) -I/usr/include/GL -I$(PYTHONCFLAGS) -I$(CASROOT) \
   -D__WXGTK__ -DHEEKSCNC -DUNICODE -DWXUSINGDLL -DWXUSINGDLL
 
 #WX_LIB_LETTER=d
@@ -59,3 +70,7 @@ PythonInterface.o: PythonInterface.cpp
 clean:
 	-rm -f $(SHARED_LIBRARY) $(OBJECTS)
 
+install: $(SHARED_LIBRARY)
+	strip $^
+	chmod 644 $^
+	install $^ $(DESTDIR)`python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(plat_specific=1, standard_lib=0, prefix='$(PREFIX)')"`
