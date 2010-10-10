@@ -1,7 +1,4 @@
 PREFIX	= /usr/local
-
-
-
 WXCFLAGS=$(shell wx-config --cflags)
 WXLDFLAGS=$(shell wx-config --libs --gl-libs)
 
@@ -16,12 +13,6 @@ else
   heekspathmessage = 
 endif
 
-ifeq ($(strip $(HEEKSCNCPATH)),)
-  heekspathmessage = message
-  HEEKSCNCPATH = ../..
-else
-  heekspathmessage = 
-endif
 
 ifeq ($(strip $(PYTHONCFLAGS)),)
   PYTHONCFLAGS=$(shell python-config --includes)
@@ -35,7 +26,7 @@ endif
 
 
 CCFLAGS=-Wall -fPIC -g -I ./ $(WXCFLAGS) \
-  -I$(HEEKSCADPATH) -I$(HEEKSCNCPATH) -I/usr/include/GL -I$(PYTHONCFLAGS) -I$(CASROOT) \
+  -I$(HEEKSCADPATH)  -I/usr/include/GL -I$(PYTHONCFLAGS) -I$(CASROOT) \
   -D__WXGTK__ -DHEEKSCNC -DUNICODE -DWXUSINGDLL -DWXUSINGDLL
 
 #WX_LIB_LETTER=d
