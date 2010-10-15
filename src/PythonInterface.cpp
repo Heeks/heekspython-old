@@ -257,6 +257,18 @@ static PyObject* Reorder(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* ViewExtents(PyObject* self, PyObject* args)
+{
+
+	heeksCAD->ViewExtents(false);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+
 static PyObject* NewSketch(PyObject* self, PyObject* args)
 {
 	lastobj = heeksCAD->NewSketch();
@@ -535,71 +547,119 @@ static PyObject* NewCoordinateSystem(PyObject* self, PyObject* args)
 }
 
 
-
-
-// HeeksCNC functions
-/*
-static PyObject* HideIt(PyObject* self, PyObject* args)
-{
-
-	
-	heeksCNC->HideMachiningMenu();
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	//heeksCAD->Repaint();
-
-
-	PyObject *pValue = Py_None;
-	Py_INCREF(pValue);
-	return pValue;
-
-}
-*/
-
 static PyObject* PickPoint(PyObject* self, PyObject* args)
-{
-	double pt1[3];
-	//if (!PyArg_ParseTuple(args,&pt1[0],&pt1[1],&pt1[2]) ) return NULL;
+{	//get point in space, so to speak- not necessarily on an actual object
+	//will return a point that is clicked in the graphicscanvas
+	//the little spinner wheel will rotate until this is completed
+	double pt1[3]={0,0,0};
+	double px = 0;double py=0;double pz=0;
 	heeksCAD->PickPosition(_("Pick something, please!"),pt1);
-	lastobj = heeksCAD->NewPoint(pt1);
+	
+	px= pt1[0];py= pt1[1]; pz= pt1[2];
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	PyObject *pTuple = PyTuple_New(3);
+	{
+		PyObject *pValue = PyFloat_FromDouble(px);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 0, pValue);
+	}
+	{
+		PyObject *pValue = PyFloat_FromDouble(py);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 1, pValue);
+	}
+	{
+		PyObject *pValue = PyFloat_FromDouble(pz);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 2, pValue);
+	}
 
-	PyObject *pValue = Py_None;
-	Py_INCREF(pValue);
-	return pValue;
+	Py_INCREF(pTuple);
+	return pTuple;
 }
 
 
-static PyObject* PickPoint2(PyObject* self, PyObject* args)
+
+static PyObject* GetClickedPos(PyObject* self, PyObject* args)
 {
-	double pt1[3];
-	//double p[3];
-	//if (!PyArg_ParseTuple(args,&pt1[0],&pt1[1],&pt1[2]) ) return NULL;
-	heeksCAD->PickPosition(_("Pick something, please!"),pt1);
-	lastobj = heeksCAD->NewPoint(pt1);
-	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
-	//heeksCAD->VertexGetPoint(pt1);
-
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	PyObject *pValue = Py_None;
-	Py_INCREF(pValue);
-	return pValue;
-}
-
-static PyObject* Dummy(PyObject* self, PyObject* args)
-{
-	double pt1[3];
-
+	//will return last double clicked point in graphicscanvas
+	//need to double click on a point object
+	double pt1[3]={0,0,0};
+	double px = 0;double py=0;double pz=0;
 	heeksCAD->GetLastClickPosition(pt1);
-
+	
+	px= pt1[0];py= pt1[1]; pz= pt1[2];
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	PyObject *pTuple = PyTuple_New(3);
+	{
+		PyObject *pValue = PyFloat_FromDouble(px);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 0, pValue);
+	}
+	{
+		PyObject *pValue = PyFloat_FromDouble(py);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 1, pValue);
+	}
+	{
+		PyObject *pValue = PyFloat_FromDouble(pz);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 2, pValue);
+	}
 
-	PyObject *pValue = Py_None;
-	Py_INCREF(pValue);
-	return pValue;
+	Py_INCREF(pTuple);
+	return pTuple;
+}
 
+static PyObject* GetPoint3d(PyObject* self, PyObject* args)
+{
+	//will return coordinates x,y,z of actual point object in graphicscanvas
+	//need to pick point before calling function
+	HeeksObj *obj;
+	double pt1[3]={0,0,0};
+	double px = 0;double py=0;double pz=0;
+	obj= heeksCAD->GetFirstMarkedObject();
+	if (!obj) return NULL;
+	heeksCAD->VertexGetPoint(obj,pt1);
+	px= pt1[0];py= pt1[1]; pz= pt1[2];
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	PyObject *pTuple = PyTuple_New(3);
+	{
+		PyObject *pValue = PyFloat_FromDouble(px);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 0, pValue);
+	}
+	{
+		PyObject *pValue = PyFloat_FromDouble(py);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 1, pValue);
+	}
+	{
+		PyObject *pValue = PyFloat_FromDouble(pz);
+		if (!pValue){
+			Py_DECREF(pTuple);return NULL;
+		}
+		PyTuple_SetItem(pTuple, 2, pValue);
+	}
+
+	Py_INCREF(pTuple);
+	return pTuple;
 }
 
 
@@ -633,11 +693,9 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"fillet" ,Fillet, METH_VARARGS, "fillet(obj,point,radius)"},
 	{"coordinate" ,NewCoordinateSystem, METH_VARARGS, "coordinate(position,x_vec,y_vec)"},	
 	{"pickpoint" , PickPoint, METH_VARARGS, "pickpoint()"},	
-	{"pickpoint2" , PickPoint2, METH_VARARGS, "pickpoint2()"},
-	{"dummy" , Dummy, METH_VARARGS, "dummy()"},	
-// heekscnc functions
-	//{"hideIt" ,HideIt, METH_VARARGS, "hideIt()"},
-
+	{"lastclicked" , GetClickedPos, METH_VARARGS, "lastclicked()"},	
+	{"view_extents" , ViewExtents, METH_VARARGS, "view_extents()"},
+	{"getpoint" , GetPoint3d, METH_VARARGS, "getpoint()"},	
 	{NULL, NULL, 0, NULL}
 };
 
