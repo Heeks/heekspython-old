@@ -11,6 +11,9 @@
 #include "interface/HeeksCADInterface.h"
 #include "interface/HeeksObj.h"
 #include "ConsoleCanvas.h"
+
+
+
 //#include "src/PointDrawing.h"
 #include <set>
 
@@ -21,6 +24,7 @@
 extern CHeeksCADInterface *heeksCAD;
 extern CHeeksPythonApp *theApp;
 extern wxWindow* m_window;
+
 
 class Property;
 
@@ -507,7 +511,6 @@ static PyObject* Fillet(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple( args, "idddd", &pyobj,&p[0], &p[1], &p[2], &r)) return NULL;
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	heeksCAD->FilletSketchAtPoint(obj,p,r);
-	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 
 	PyObject *pValue = Py_None;
@@ -531,6 +534,73 @@ static PyObject* NewCoordinateSystem(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+
+
+
+// HeeksCNC functions
+/*
+static PyObject* HideIt(PyObject* self, PyObject* args)
+{
+
+	
+	heeksCNC->HideMachiningMenu();
+	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	//heeksCAD->Repaint();
+
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+
+}
+*/
+
+static PyObject* PickPoint(PyObject* self, PyObject* args)
+{
+	double pt1[3];
+	//if (!PyArg_ParseTuple(args,&pt1[0],&pt1[1],&pt1[2]) ) return NULL;
+	heeksCAD->PickPosition(_("Pick something, please!"),pt1);
+	lastobj = heeksCAD->NewPoint(pt1);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+
+static PyObject* PickPoint2(PyObject* self, PyObject* args)
+{
+	double pt1[3];
+	//double p[3];
+	//if (!PyArg_ParseTuple(args,&pt1[0],&pt1[1],&pt1[2]) ) return NULL;
+	heeksCAD->PickPosition(_("Pick something, please!"),pt1);
+	lastobj = heeksCAD->NewPoint(pt1);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+	//heeksCAD->VertexGetPoint(pt1);
+
+	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+static PyObject* Dummy(PyObject* self, PyObject* args)
+{
+	double pt1[3];
+
+	heeksCAD->GetLastClickPosition(pt1);
+
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+
+}
 
 
 static PyMethodDef HeeksPythonMethods[] = {
@@ -561,7 +631,13 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"translate",Translate, METH_VARARGS , "translate(object,p_x,p_y,p_z)"},
 	{"setcolor",SetColor, METH_VARARGS, "setcolor(int r, int b, int g)"},
 	{"fillet" ,Fillet, METH_VARARGS, "fillet(obj,point,radius)"},
-	{"coordinate" ,NewCoordinateSystem, METH_VARARGS, "coordinate(position,x_vec,y_vec)"},
+	{"coordinate" ,NewCoordinateSystem, METH_VARARGS, "coordinate(position,x_vec,y_vec)"},	
+	{"pickpoint" , PickPoint, METH_VARARGS, "pickpoint()"},	
+	{"pickpoint2" , PickPoint2, METH_VARARGS, "pickpoint2()"},
+	{"dummy" , Dummy, METH_VARARGS, "dummy()"},	
+// heekscnc functions
+	//{"hideIt" ,HideIt, METH_VARARGS, "hideIt()"},
+
 	{NULL, NULL, 0, NULL}
 };
 
