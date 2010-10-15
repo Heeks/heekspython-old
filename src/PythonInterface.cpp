@@ -513,7 +513,7 @@ static PyObject* SetColor(PyObject* self, PyObject* args)
 	return pValue;
 }
 
-static PyObject* Fillet(PyObject* self, PyObject* args)
+static PyObject* Fillet2d(PyObject* self, PyObject* args)
 { //the lines definitely need to be trimmed first
 	HeeksObj *obj;
 	int pyobj = 0;
@@ -690,7 +690,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"rotate",Rotate, METH_VARARGS , "rotate(object,p_x,p_y,p_z,u_x,u_y,u_z,r)"},
 	{"translate",Translate, METH_VARARGS , "translate(object,p_x,p_y,p_z)"},
 	{"setcolor",SetColor, METH_VARARGS, "setcolor(int r, int b, int g)"},
-	{"fillet" ,Fillet, METH_VARARGS, "fillet(obj,point,radius)"},
+	{"fillet2d" ,Fillet2d, METH_VARARGS, "fillet2d(obj,point,radius)"},
 	{"coordinate" ,NewCoordinateSystem, METH_VARARGS, "coordinate(position,x_vec,y_vec)"},	
 	{"pickpoint" , PickPoint, METH_VARARGS, "pickpoint()"},	
 	{"lastclicked" , GetClickedPos, METH_VARARGS, "lastclicked()"},	
