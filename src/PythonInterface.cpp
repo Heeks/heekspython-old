@@ -663,6 +663,44 @@ static PyObject* GetPoint3d(PyObject* self, PyObject* args)
 }
 
 
+inline wxString _U(const char String[] = "")
+{
+    return wxString(String, wxConvUTF8);
+}
+
+
+static PyObject* NewText(PyObject* self, PyObject* args)
+{	
+
+	const char *text; //the text that gets input in python
+
+	if (!PyArg_ParseTuple(args, "s",  &text)) return NULL; 
+	
+	heeksCAD->AddText(_U(text));
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+
+}
+
+
+
+
+static PyObject* DXFImport(PyObject* self, PyObject* args)
+{	
+
+	const char  *filepath;
+	if (!PyArg_ParseTuple(args, "s",  &filepath)) return NULL;	
+
+	heeksCAD->OpendxfFile(_U(filepath));	
+	
+	heeksCAD->Repaint();	
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
 	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
@@ -695,7 +733,10 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"pickpoint" , PickPoint, METH_VARARGS, "pickpoint()"},	
 	{"lastclicked" , GetClickedPos, METH_VARARGS, "lastclicked()"},	
 	{"view_extents" , ViewExtents, METH_VARARGS, "view_extents()"},
+	{"ve" , ViewExtents, METH_VARARGS, "ve"},
 	{"getpoint" , GetPoint3d, METH_VARARGS, "getpoint()"},	
+	{"addtext", NewText, METH_VARARGS , "addtext('string')"},
+	{"importdxf", DXFImport, METH_VARARGS , "importdxf('/filepath/filename.dxf')"},	
 	{NULL, NULL, 0, NULL}
 };
 
