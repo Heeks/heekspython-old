@@ -268,6 +268,17 @@ static PyObject* ViewExtents(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* XYZview(PyObject* self, PyObject* args)
+{
+
+	heeksCAD->XYZView(true);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
 
 static PyObject* NewSketch(PyObject* self, PyObject* args)
 {
@@ -733,7 +744,8 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"pickpoint" , PickPoint, METH_VARARGS, "pickpoint()"},	
 	{"lastclicked" , GetClickedPos, METH_VARARGS, "lastclicked()"},	
 	{"view_extents" , ViewExtents, METH_VARARGS, "view_extents()"},
-	{"ve" , ViewExtents, METH_VARARGS, "ve"},
+	{"ve" , ViewExtents, METH_VARARGS, "ve()"},
+	{"xyzview" , XYZview, METH_VARARGS, "xyzview()"},
 	{"getpoint" , GetPoint3d, METH_VARARGS, "getpoint()"},	
 	{"addtext", NewText, METH_VARARGS , "addtext('string')"},
 	{"importdxf", DXFImport, METH_VARARGS , "importdxf('/filepath/filename.dxf')"},	
