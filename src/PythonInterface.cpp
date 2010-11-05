@@ -386,6 +386,26 @@ static PyObject* Translate(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* Scale(PyObject* self, PyObject* args)
+{
+	HeeksObj *obj;
+	int pyobj = 0;
+	double p[3];
+	double scale = 1.0;
+
+    if (!PyArg_ParseTuple( args, "idddd", &pyobj,&p[0],&p[1],&p[2],&scale)) return NULL;
+
+    // Convert the PyCObject to a void pointer:
+    	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
+	heeksCAD->ScaleObject(obj,p,scale);
+	heeksCAD->Repaint();
+	
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
 static PyObject* Add(PyObject* self, PyObject* args)
 {
 	HeeksObj *group, *obj;
@@ -738,6 +758,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"getlastobj", GetLastObj, METH_VARARGS , "getlastobj()"},
 	{"rotate",Rotate, METH_VARARGS , "rotate(object,p_x,p_y,p_z,u_x,u_y,u_z,r)"},
 	{"translate",Translate, METH_VARARGS , "translate(object,p_x,p_y,p_z)"},
+	{"scale",Scale, METH_VARARGS , "scale(object,p_x,p_y,p_z,scale)"},
 	{"setcolor",SetColor, METH_VARARGS, "setcolor(int r, int b, int g)"},
 	{"fillet2d" ,Fillet2d, METH_VARARGS, "fillet2d(obj,point,radius)"},
 	{"coordinate" ,NewCoordinateSystem, METH_VARARGS, "coordinate(position,x_vec,y_vec)"},	
