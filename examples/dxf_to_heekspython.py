@@ -84,7 +84,7 @@ def _parse_file(f):
 # dxf to HeeksPython
 # DF added 10/31/10
 ##########################
-def gen_heekspython_entities(f):
+def gen_heekspython_entities(f,sketch_num):
     """Generate HeeksPython objects from dxf entities."""
     units, entities = _parse_file(f)
     lines, circles, arcs = entities
@@ -99,7 +99,7 @@ def gen_heekspython_entities(f):
     i = 0
     collector=[] 
     collector.append("cad.sketch()\n")
-    collector.append("sketch = cad.getlastobj()\n")   
+    collector.append("sketch"+str(sketch_num)+" = cad.getlastobj()\n")   
     for line in lines:
         p1 = (float(line['10'])*scale,
               float(line['20'])*scale)
@@ -109,7 +109,7 @@ def gen_heekspython_entities(f):
         #print"#Line,"+str(p1[0])+","+str(p1[1])+",0,"+str(p2[0])+","+str(p2[1])+",0\n"
         collector.append("cad.line("+str(p1[0])+","+str(p1[1])+","+str(p2[0])+","+str(p2[1])+")\n")
         collector.append("i"+str(i)+"= cad.getlastobj()\n")
-        collector.append("cad.add(sketch,i"+str(i)+")\n")
+        collector.append("cad.add(sketch"+str(sketch_num)+",i"+str(i)+")\n")
         i+=1
         k+=1
         
@@ -125,7 +125,7 @@ def gen_heekspython_entities(f):
         #print "#Circle,"+str(cntr[0])+","+str(cntr[1])+",0,"+str(radius)+"\n"
         collector.append("cad.circle("+str(cntr[0])+","+str(cntr[1])+","+str(radius)+")\n")
         collector.append("i"+str(i)+"= cad.getlastobj()\n")
-        collector.append("cad.add(sketch,i"+str(i)+")\n")
+        collector.append("cad.add(sketch"+str(sketch_num)+",i"+str(i)+")\n")
         i+=1
         k+=1
         mcdict[k] = coords
@@ -144,12 +144,12 @@ def gen_heekspython_entities(f):
         collector.append("cad.arc("+str(cntr[0])+","+str(cntr[1])+",0,"+str(radius)+","+str(angle1)+","+str(angle2)+",0,0,1)\n")
         #hardcoded dir vector and need to convert angles to radians, I 
         collector.append("i"+str(i)+"= cad.getlastobj()\n")
-        collector.append("cad.add(sketch,i"+str(i)+")\n")
+        collector.append("cad.add(sketch"+str(sketch_num)+",i"+str(i)+")\n")
         i+=1
         k+=1
         madict[k] = coords
     string = "".join(collector)
-    string= string + "cad.reorder(sketch)\n" 
+    string= string + "cad.reorder(sketch"+str(sketch_num)+")\n" 
     #string= string + "cad.revolve(sketch,360)"            
     return string         
 
@@ -164,12 +164,18 @@ sys.path.insert(0,'/home/dan/heeks/heekspython2/examples')
 import dxf_to_heekspython
 
 file_in='/home/dan/Documents/drawings/blob.dxf'
-l = dxf_to_heekspython.gen_heekspython_entities(file_in)
+l = dxf_to_heekspython.gen_heekspython_entities(file_in,1)
+exec(l)
+
+or scale the object/sketch like this:
+l = dxf_to_heekspython.gen_heekspython_entities(file_in,1)
+l = l +"cad.scale(sketch1,0,0,0,.25)"
 exec(l)
 
 or even revolve a solid after returning l
-l = dxf_to_heekspython.gen_heekspython_entities(file_in)
-l = l +"cad.revolve(sketch,360)"
+l = dxf_to_heekspython.gen_heekspython_entities(file_in,1)
+l = l +"cad.revolve(sketch1,360)"
 exec(l)
+
 '''
 
