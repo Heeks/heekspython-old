@@ -436,8 +436,9 @@ static PyObject* Fuse(PyObject* self, PyObject* args)
 	std::list<HeeksObj*> list;
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
-	lastobj = heeksCAD->Fuse(list);
-	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	//lastobj = heeksCAD->Fuse(list);
+	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Fuse(list);
 	heeksCAD->Repaint();
 	
 
@@ -500,8 +501,9 @@ static PyObject* Cut(PyObject* self, PyObject* args)
 	std::list<HeeksObj*> list;
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
-	lastobj = heeksCAD->Cut(list);
-	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	//lastobj = heeksCAD->Cut(list);
+	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Cut(list);
 	heeksCAD->Repaint();
 	
 
@@ -522,6 +524,7 @@ static PyObject* Pipe(PyObject* self, PyObject* args)
 	profile = (HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF);
 	lastobj = heeksCAD->MakePipe(wire,profile);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	//heeksCAD->MakePipe(wire,profile);
 	heeksCAD->Repaint();
 	
 
