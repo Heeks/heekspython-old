@@ -1,0 +1,10 @@
+Here's a way of running example.py without copy/paste.
+
+Type or 'paste plus' this into the HeeksPython console:
+
+import sys
+sys.path.insert(0,'/home/dan/heeks/heekspython3/examples') #your directory will be different than mine
+import example
+example.run()
+
+
