@@ -194,6 +194,22 @@ static PyObject* NewCylinder(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* NewCylinderEx(PyObject* self, PyObject* args)
+{
+	double pos[3]={0,0,0};
+	double dir[3]={0,0,0};
+	double r=0;
+	double h=0;
+	if (!PyArg_ParseTuple(args, "dddddddd", &pos[0],&pos[1],&pos[2],&dir[0],&dir[1],&dir[2],&r,&h)) return NULL;
+	lastobj = heeksCAD->NewCylinderEx(pos,dir,r,h);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);
+	heeksCAD->Repaint();
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
 static PyObject* NewCone(PyObject* self, PyObject* args)
 {
 	double c[3]={0,0,0};
@@ -749,6 +765,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"circle", NewCircle, METH_VARARGS , "circle(centre_x, centre_y, radius)"},
 	{"cuboid", NewCuboid, METH_VARARGS , "cuboid(centre_x, centre_y, centre_z, length, width, height)"},
 	{"cylinder", NewCylinder, METH_VARARGS , "cylinder(centre_x, centre_y, centre_z, radius, height)"},
+        {"directedcylinder", NewCylinderEx, METH_VARARGS , "directedcylinder(centre_x, centre_y, centre_z, dir_x, dir_y, dir_z, radius, height)"},
 	{"cone", NewCone, METH_VARARGS , "cylinder(centre_x, centre_y, centre_z, radius1, radius2, height)"},
     	{"sphere",NewSphere,METH_VARARGS ,"sphere(centre_x, centre_y, centre_z, radius)"},
 	{"group", NewGroup, METH_VARARGS , "group()"},
