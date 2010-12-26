@@ -1,5 +1,4 @@
 // HeeksPython.cpp
-#include <Python.h>
 #include "stdafx.h"
 
 #ifdef WIN32
@@ -10,16 +9,24 @@
 #include "Interface.h"
 #include "interface/HeeksCADInterface.h"
 #include "interface/HeeksObj.h"
+#include "interface/ToolImage.h"
 #include "ConsoleCanvas.h"
+#include "PythonConfig.h"
 
 
 
 //#include "src/PointDrawing.h"
 #include <set>
 
-
-
+#ifdef _DEBUG
+#undef _DEBUG
+#include <Python.h>
 #include <wx/wxPython/wxPython.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#include <wx/wxPython/wxPython.h>
+#endif
 
 extern CHeeksCADInterface *heeksCAD;
 extern CHeeksPythonApp *theApp;
@@ -733,7 +740,139 @@ static PyObject* NewText(PyObject* self, PyObject* args)
 }
 
 
+static PyObject* AddMenu(PyObject* self, PyObject* args)
+{	
+	const char  *menu_name;
+	if (!PyArg_ParseTuple(args, "s",  &menu_name)) return NULL;	
 
+	wxFrame* frame = heeksCAD->GetMainFrame();
+	wxMenu *newMenu = new wxMenu;
+	frame->GetMenuBar()->Append(newMenu,  _U(menu_name));
+
+	return PyInt_FromSize_t((unsigned int)newMenu);
+}
+
+static PyObject* GetFrameHwnd(PyObject* self, PyObject* args)
+{	
+	wxFrame* frame = heeksCAD->GetMainFrame();
+	return PyInt_FromSize_t((unsigned int)(frame->GetHWND()));
+}
+
+std::map<int, wxString> menu_item_map;
+
+void OnMenuItem(wxCommandEvent &event)
+{
+	std::map<int, wxString>::iterator FindIt = menu_item_map.find(event.GetId());
+	if(FindIt != menu_item_map.end())
+	{
+		// As always, first grab the GIL
+		wxPyBlock_t blocked = wxPyBeginBlockThreads();
+
+		// Now make a dictionary to serve as the global namespace when the code is
+		// executed.  Put a reference to the builtins module in it.  (Yes, the
+		// names are supposed to be different, I don't know why...)
+		PyObject* globals = PyDict_New();
+		PyObject* builtins = PyImport_ImportModule("__builtin__");
+		PyDict_SetItemString(globals, "__builtins__", builtins);
+		Py_DECREF(builtins);
+
+		// Execute the python code
+		std::string _str((const char *) FindIt->second.mb_str(wxConvUTF8));
+		PyObject* result = PyRun_String(_str.c_str(), Py_file_input, globals, globals);
+
+		// Release the python objects we still have
+		if (result)Py_DECREF(result);
+		else PyErr_Print();
+		Py_DECREF(globals);
+
+		// Finally, after all Python stuff is done, release the GIL
+		wxPyEndBlockThreads(blocked);
+	}
+}
+
+static PyObject* AddMenuItem(PyObject* self, PyObject* args)
+{	
+	long int_menu;
+	const char *title;
+	const char *python_script;
+	const char *bitmap_path;
+	if (!PyArg_ParseTuple(args, "lsss",  &int_menu, &title, &python_script, &bitmap_path)) return NULL;	
+
+	wxMenu *menu = (wxMenu*)int_menu;
+
+	int id = heeksCAD->AddMenuItem(menu, wxString(_U(title)), ToolImage(_U(bitmap_path)), OnMenuItem, NULL);
+
+	menu_item_map.insert(std::make_pair(id, wxString(_U(python_script))));
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+static std::list<wxWindow*> new_windows;
+
+std::map<int, wxWindow*> window_map;
+
+void OnWindow( wxCommandEvent& event )
+{
+	std::map<int, wxWindow*>::iterator FindIt = window_map.find(event.GetId());
+	if(FindIt != window_map.end())
+	{
+		wxWindow* window = FindIt->second;
+		wxAuiManager* aui_manager = heeksCAD->GetAuiManager();
+		wxAuiPaneInfo& pane_info = aui_manager->GetPane(window);
+		if(pane_info.IsOk()){
+			pane_info.Show(event.IsChecked());
+			aui_manager->Update();
+		}
+	}
+}
+
+void OnUpdateWindow( wxUpdateUIEvent& event )
+{
+	std::map<int, wxWindow*>::iterator FindIt = window_map.find(event.GetId());
+	if(FindIt != window_map.end())
+	{
+		wxWindow* window = FindIt->second;
+		wxAuiManager* aui_manager = heeksCAD->GetAuiManager();
+		event.Check(aui_manager->GetPane(window).IsShown());
+	}
+}
+
+static PyObject* AddWindow(PyObject* self, PyObject* args)
+{	
+	long int_window;
+	if (!PyArg_ParseTuple(args, "l",  &int_window)) return NULL;	
+
+	wxFrame* frame = heeksCAD->GetMainFrame();
+	wxAuiManager* aui_manager = heeksCAD->GetAuiManager();
+
+	wxWindow * new_window = new wxWindow();
+	new_window->SetHWND((WXHWND)int_window);
+	new_window->AdoptAttributesFromHWND();
+	new_window->Reparent(frame);
+
+	wxString label = new_window->GetLabel();
+
+	new_windows.push_back(new_window);
+
+	aui_manager->AddPane(new_window, wxAuiPaneInfo().Name(label).Caption(label).Bottom().BestSize(wxSize(600, 200)));
+
+	bool window_visible;
+	wxString config_name = label + wxString(_T("Visible"));
+	PythonConfig config;
+
+	config.Read(config_name, &window_visible);
+
+	aui_manager->GetPane(new_window).Show(window_visible);
+
+	wxMenu* view_menu = heeksCAD->GetWindowMenu();
+	int id = heeksCAD->AddMenuItem(view_menu, label, wxBitmap(), OnWindow, OnUpdateWindow,0,true);
+	heeksCAD->RegisterHideableWindow(new_window);
+	window_map.insert(std::make_pair(id, new_window));
+
+	return PyInt_FromLong(new_window->GetId());
+}
 
 static PyObject* DXFImport(PyObject* self, PyObject* args)
 {	
@@ -788,6 +927,10 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"getpoint" , GetPoint3d, METH_VARARGS, "getpoint()"},	
 	{"addtext", NewText, METH_VARARGS , "addtext('string')"},
 	{"importdxf", DXFImport, METH_VARARGS , "importdxf('/filepath/filename.dxf')"},	
+	{"addmenu", AddMenu, METH_VARARGS , "menu = addmenu('string')"},
+	{"add_menu_item", AddMenuItem, METH_VARARGS , "add_menu_item(menu, 'string', 'python_script')"},
+	{"add_window", AddWindow, METH_VARARGS , "add_window(hwnd)"},
+	{"get_frame_hwnd", GetFrameHwnd, METH_VARARGS , "hwnd = get_frame_hwnd()"},
 	{NULL, NULL, 0, NULL}
 };
 

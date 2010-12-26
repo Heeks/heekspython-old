@@ -1,4 +1,4 @@
-// HeeksCNC.cpp
+// HeeksPython.cpp
 /*
  * Copyright (c) 2009, Dan Heeks
  * This program is released under the BSD license. See the file COPYING for
@@ -14,6 +14,18 @@
 #include "interface/Observer.h"
 #include "ConsoleCanvas.h"
 #include "PythonConfig.h"
+
+
+#ifdef _DEBUG
+#undef _DEBUG
+#include <Python.h>
+#include <wx/wxPython/wxPython.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#include <wx/wxPython/wxPython.h>
+#endif
+
 
 CHeeksCADInterface* heeksCAD = NULL;
 
@@ -56,6 +68,30 @@ void OnUpdateConsole( wxUpdateUIEvent& event )
 	event.Check(aui_manager->GetPane(theApp->m_console).IsShown());
 }
 
+void RunAutoExecPyFile()
+{
+    // As always, first grab the GIL
+    wxPyBlock_t blocked = wxPyBeginBlockThreads();
+
+    // Now make a dictionary to serve as the global namespace when the code is
+    // executed.  Put a reference to the builtins module in it.  (Yes, the
+    // names are supposed to be different, I don't know why...)
+    PyObject* globals = PyDict_New();
+    PyObject* builtins = PyImport_ImportModule("__builtin__");
+    PyDict_SetItemString(globals, "__builtins__", builtins);
+    Py_DECREF(builtins);
+
+    // Execute the code "import autoexec"
+    PyObject* result = PyRun_String("import autoexec", Py_file_input, globals, globals);
+
+    // Release the python objects we still have
+    if (result)Py_DECREF(result);
+	else PyErr_Print();
+    Py_DECREF(globals);
+
+    // Finally, after all Python stuff is done, release the GIL
+    wxPyEndBlockThreads(blocked);
+}
 
 void CHeeksPythonApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 {
@@ -75,7 +111,6 @@ void CHeeksPythonApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	m_console->InitP();
 	aui_manager->AddPane(m_console, wxAuiPaneInfo().Name(_T("Console")).Caption(_T("Console")).Bottom().BestSize(wxSize(600, 200)));
 
-
 	bool console_visible;
 	PythonConfig config;
 
@@ -88,11 +123,12 @@ void CHeeksPythonApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	heeksCAD->AddMenuItem(view_menu, _T("Console"), wxBitmap(), OnConsole, OnUpdateConsole,0,true);
 	heeksCAD->RegisterHideableWindow(m_console);
 
-	// add object reading functions
-//?	heeksCAD->RegisterReadXMLfunction("Program", CProgram::ReadFromXMLElement);
+	// run autoexec.py
+	RunAutoExecPyFile();
 
 	heeksCAD->SetDefaultLayout(wxString(_T("layout2|name=ToolBar;caption=General Tools;state=2108156;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=279;besth=31;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=GeomBar;caption=Geometry Tools;state=2108156;dir=1;layer=10;row=0;pos=290;prop=100000;bestw=248;besth=31;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=SolidBar;caption=Solid Tools;state=2108156;dir=1;layer=10;row=1;pos=0;prop=100000;bestw=341;besth=31;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=970;floaty=297;floatw=296;floath=57|name=ViewingBar;caption=Viewing Tools;state=2108156;dir=1;layer=10;row=1;pos=352;prop=100000;bestw=248;besth=31;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=TransformBar;caption=Transformation Tools;state=2108156;dir=1;layer=10;row=1;pos=611;prop=100000;bestw=217;besth=31;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Graphics;caption=Graphics;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=800;besth=600;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Objects;caption=Objects;state=2099196;dir=4;layer=1;row=0;pos=0;prop=100000;bestw=300;besth=400;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Options;caption=Options;state=2099196;dir=4;layer=1;row=0;pos=1;prop=100000;bestw=300;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Input;caption=Input;state=2099196;dir=4;layer=1;row=0;pos=2;prop=100000;bestw=300;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Properties;caption=Properties;state=2099196;dir=4;layer=1;row=0;pos=3;prop=100000;bestw=300;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=MachiningBar;caption=Machining tools;state=2108156;dir=1;layer=10;row=0;pos=549;prop=100000;bestw=279;besth=31;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Program;caption=Program;state=2099196;dir=3;layer=0;row=0;pos=0;prop=100000;bestw=600;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Output;caption=Output;state=2099196;dir=3;layer=0;row=0;pos=1;prop=100000;bestw=600;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|dock_size(5,0,0)=504|dock_size(4,1,0)=234|dock_size(1,10,0)=33|dock_size(1,10,1)=33|dock_size(3,0,0)=219|")));
 }
+
 
 void CHeeksPythonApp::OnNewOrOpen(bool open, int res)
 {
