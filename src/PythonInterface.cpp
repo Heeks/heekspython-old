@@ -28,6 +28,8 @@
 #include <wx/wxPython/wxPython.h>
 #endif
 
+
+
 extern CHeeksCADInterface *heeksCAD;
 extern CHeeksPythonApp *theApp;
 extern wxWindow* m_window;
@@ -749,13 +751,18 @@ static PyObject* AddMenu(PyObject* self, PyObject* args)
 	wxMenu *newMenu = new wxMenu;
 	frame->GetMenuBar()->Append(newMenu,  _U(menu_name));
 
-	return PyInt_FromSize_t((unsigned int)newMenu);
+	//return PyInt_FromSize_t((unsigned int)newMenu);
+	return PyInt_FromSize_t((size_t)newMenu);//size_t instead of unsigned int for 64 bit gcc
 }
 
 static PyObject* GetFrameHwnd(PyObject* self, PyObject* args)
 {	
 	wxFrame* frame = heeksCAD->GetMainFrame();
-	return PyInt_FromSize_t((unsigned int)(frame->GetHWND()));
+	#if defined(__WXMSW__)
+		return PyInt_FromSize_t((unsigned int)(frame->GetHWND()));
+	#else
+		return PyInt_FromSize_t((size_t)(frame->GetHandle()));//size_t instead of unsigned int for 64 bit gcc
+	#endif
 }
 
 std::map<int, wxString> menu_item_map;
@@ -848,8 +855,10 @@ static PyObject* AddWindow(PyObject* self, PyObject* args)
 	wxAuiManager* aui_manager = heeksCAD->GetAuiManager();
 
 	wxWindow * new_window = new wxWindow();
-	new_window->SetHWND((WXHWND)int_window);
-	new_window->AdoptAttributesFromHWND();
+	#if defined(__WXMSW__)
+		new_window->SetHWND((WXHWND)int_window);
+		new_window->AdoptAttributesFromHWND();
+	#endif
 	new_window->Reparent(frame);
 
 	wxString label = new_window->GetLabel();
