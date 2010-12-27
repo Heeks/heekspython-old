@@ -1,9 +1,15 @@
+import sys
+#comment out the next lineif you are using windows
+sys.path.insert(0,'/usr/local/share/heekspython/heeksscripts')
 import HeeksPython as cad
-test_menu = cad.addmenu('test menu')
-cad.add_menu_item(test_menu, 'item 1', 'import HeeksPython as cad; cad.addtext("item 1")', 'test')
-cad.add_menu_item(test_menu, 'item 2', 'import platform\nif platform.system() == "Windows":\n execfile("test2.py")\nelse:\n execfile("linuxtest.py")', 'test')
-cad.add_menu_item(test_menu, 'item 2', 'import HeeksPython as cad; cad.addtext("item 1")', 'test')
 
+test_menu = cad.addmenu('test menu')
+cad.add_menu_item(test_menu, 'item 1', 'import HeeksPython as cad; cad.addtext("1-")', 'test')
+cad.add_menu_item(test_menu, 'Bolt Circle','import polar_array;frame_1 = polar_array.MyFrame(None, -1, "");frame_1.Show()', 'test')
+cad.add_menu_item(test_menu, 'item 3', 'import HeeksPython as cad; cad.addtext("  -2")', 'test')
+
+#uncomment the next section if you are using windows
+'''
 import wx
 
 class CAMWindow(wx.ScrolledWindow):
@@ -27,6 +33,8 @@ hwnd = cad.get_frame_hwnd()
 frame = wx.Window_FromHWND(None, hwnd)
 window = CAMWindow(frame)
 cad.add_window(window.GetHandle())
+'''
+
 
 from PyQt4 import QtGui
 
