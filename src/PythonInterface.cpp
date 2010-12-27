@@ -12,7 +12,7 @@
 #include "interface/ToolImage.h"
 #include "ConsoleCanvas.h"
 #include "PythonConfig.h"
-
+#include "interface/ObjList.h"
 
 
 //#include "src/PointDrawing.h"
@@ -816,6 +816,8 @@ static PyObject* AddMenuItem(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+
+
 static std::list<wxWindow*> new_windows;
 
 std::map<int, wxWindow*> window_map;
@@ -897,6 +899,39 @@ static PyObject* DXFImport(PyObject* self, PyObject* args)
 	return pValue;
 }
 
+static PyObject* Redraw(PyObject* self, PyObject* args)
+{
+	
+	
+	heeksCAD->Repaint();
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+	
+
+}
+
+
+static PyObject* GetProfile(PyObject* self, PyObject* args)
+{
+	//I am trying to return a single sketch 
+	//this doesn't work yet
+	//it just returns and int of '1' every time
+	
+	PyObject *resultobj = 0;
+
+	int result;
+
+	result = heeksCAD->PickObjects(_("Select a Sketch"), MARKING_FILTER_SKETCH,true);
+	resultobj = PyLong_FromLong(result);
+	
+	PyObject *pValue = resultobj;
+	Py_INCREF(pValue);
+	return pValue;
+
+}
+
+
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
 	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
@@ -940,6 +975,8 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"add_menu_item", AddMenuItem, METH_VARARGS , "add_menu_item(menu, 'string', 'python_script')"},
 	{"add_window", AddWindow, METH_VARARGS , "add_window(hwnd)"},
 	{"get_frame_hwnd", GetFrameHwnd, METH_VARARGS , "hwnd = get_frame_hwnd()"},
+	{"redraw" , Redraw, METH_VARARGS, "redraw()"},
+	{"getsketch" , GetProfile, METH_VARARGS, "getsketch()"},	
 	{NULL, NULL, 0, NULL}
 };
 
