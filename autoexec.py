@@ -8,6 +8,7 @@ cad.add_menu_item(test_menu, 'item 1', 'import HeeksPython as cad; cad.addtext("
 cad.add_menu_item(test_menu, 'item 2', 'import HeeksPython as cad; cad.addtext("  -2")', 'test')
 #comment out the next lineif you are using windows
 cad.add_menu_item(test_menu, 'Bolt Circle','import polar_array;frame_1 = polar_array.MyFrame(None, -1, "");frame_1.Show()', 'test')
+cad.add_menu_item(test_menu, 'item 4', 'import platform\nif platform.system() == "Windows":\n execfile("test2.py")\nelse:\n execfile("linuxtest.py")', 'test')
 
 #uncomment the next section if you are using windows
 '''
