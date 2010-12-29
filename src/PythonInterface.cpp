@@ -355,6 +355,7 @@ static PyObject* Extrude(PyObject* self, PyObject* args)
 	lastobj = heeksCAD->ExtrudeSketch(obj,h,true);
 
 
+
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 
@@ -743,13 +744,13 @@ static PyObject* AddMenu(PyObject* self, PyObject* args)
 	wxMenu *newMenu = new wxMenu;
 	frame->GetMenuBar()->Append(newMenu,  _U(menu_name));
 
-	return PyInt_FromSize_t((unsigned int)newMenu);
+	return PyInt_FromSize_t((size_t)newMenu);//size_t instead of unsigned int for 64 bit gcc
 }
 
 static PyObject* GetFrameHwnd(PyObject* self, PyObject* args)
 {	
 	wxFrame* frame = heeksCAD->GetMainFrame();
-	return PyInt_FromSize_t((unsigned int)(frame->GetHandle()));
+	return PyInt_FromSize_t((size_t)(frame->GetHandle()));//size_t instead of unsigned int for 64 bit gcc
 }
 
 static PyObject* GetFrameId(PyObject* self, PyObject* args)
