@@ -1,4 +1,5 @@
 // HeeksPython.cpp
+#include <Python.h>
 #include "stdafx.h"
 
 #ifdef WIN32
@@ -12,26 +13,18 @@
 #include "interface/ToolImage.h"
 #include "ConsoleCanvas.h"
 #include "PythonConfig.h"
-#include "interface/ObjList.h"
+
 
 
 //#include "src/PointDrawing.h"
 #include <set>
 
-#ifdef _DEBUG
-#undef _DEBUG
-#include <Python.h>
-#include <wx/wxPython/wxPython.h>
-#define _DEBUG
-#else
-#include <Python.h>
-#include <wx/wxPython/wxPython.h>
-#endif
 
+#include <wx/wxPython/wxPython.h>
 
 
 extern CHeeksCADInterface *heeksCAD;
-extern CHeeksPythonApp *theApp;
+extern CHeeksPythonApp theApp;
 extern wxWindow* m_window;
 
 
@@ -39,20 +32,18 @@ class Property;
 
 void OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 {
-
-	theApp = new CHeeksPythonApp();
-	theApp->OnStartUp(h, dll_path);
+	theApp.OnStartUp(h, dll_path);
 }
 
 void OnNewOrOpen(int open, int res)
 {
-	theApp->OnNewOrOpen(open != 0, res);
+	theApp.OnNewOrOpen(open != 0, res);
 }
 
 void GetOptions(void(*callbackfunc)(Property*))
 {
 	std::list<Property*> list;
-	theApp->GetOptions(&list);
+	theApp.GetOptions(&list);
 	for(std::list<Property*>::iterator It = list.begin(); It != list.end(); It++){
 		Property* p = *It;
 		(*callbackfunc)(p);
@@ -61,7 +52,7 @@ void GetOptions(void(*callbackfunc)(Property*))
 
 void OnFrameDelete()
 {
-	theApp->OnFrameDelete();
+	theApp.OnFrameDelete();
 }
 
 HeeksObj* lastobj;
@@ -362,6 +353,8 @@ static PyObject* Extrude(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	lastobj = heeksCAD->ExtrudeSketch(obj,h,true);
+
+
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
 	heeksCAD->Repaint();
 
@@ -741,7 +734,6 @@ static PyObject* NewText(PyObject* self, PyObject* args)
 
 }
 
-
 static PyObject* AddMenu(PyObject* self, PyObject* args)
 {	
 	const char  *menu_name;
@@ -751,18 +743,19 @@ static PyObject* AddMenu(PyObject* self, PyObject* args)
 	wxMenu *newMenu = new wxMenu;
 	frame->GetMenuBar()->Append(newMenu,  _U(menu_name));
 
-	//return PyInt_FromSize_t((unsigned int)newMenu);
-	return PyInt_FromSize_t((size_t)newMenu);//size_t instead of unsigned int for 64 bit gcc
+	return PyInt_FromSize_t((unsigned int)newMenu);
 }
 
 static PyObject* GetFrameHwnd(PyObject* self, PyObject* args)
 {	
 	wxFrame* frame = heeksCAD->GetMainFrame();
-	#if defined(__WXMSW__)
-		return PyInt_FromSize_t((unsigned int)(frame->GetHWND()));
-	#else
-		return PyInt_FromSize_t((size_t)(frame->GetHandle()));//size_t instead of unsigned int for 64 bit gcc
-	#endif
+	return PyInt_FromSize_t((unsigned int)(frame->GetHandle()));
+}
+
+static PyObject* GetFrameId(PyObject* self, PyObject* args)
+{	
+	wxFrame* frame = heeksCAD->GetMainFrame();
+	return PyInt_FromLong(frame->GetId());
 }
 
 std::map<int, wxString> menu_item_map;
@@ -816,8 +809,6 @@ static PyObject* AddMenuItem(PyObject* self, PyObject* args)
 	return pValue;
 }
 
-
-
 static std::list<wxWindow*> new_windows;
 
 std::map<int, wxWindow*> window_map;
@@ -856,12 +847,15 @@ static PyObject* AddWindow(PyObject* self, PyObject* args)
 	wxFrame* frame = heeksCAD->GetMainFrame();
 	wxAuiManager* aui_manager = heeksCAD->GetAuiManager();
 
+#ifdef WIN32
 	wxWindow * new_window = new wxWindow();
-	#if defined(__WXMSW__)
-		new_window->SetHWND((WXHWND)int_window);
-		new_window->AdoptAttributesFromHWND();
-	#endif
+	new_window->SetHWND((WXHWND)int_window);
+	new_window->AdoptAttributesFromHWND();
 	new_window->Reparent(frame);
+#else
+	wxWindow * new_window = wxWindow::FindWindowById(int_window);
+	new_window->Reparent(frame);
+#endif
 
 	wxString label = new_window->GetLabel();
 
@@ -975,6 +969,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"add_menu_item", AddMenuItem, METH_VARARGS , "add_menu_item(menu, 'string', 'python_script')"},
 	{"add_window", AddWindow, METH_VARARGS , "add_window(hwnd)"},
 	{"get_frame_hwnd", GetFrameHwnd, METH_VARARGS , "hwnd = get_frame_hwnd()"},
+	{"get_frame_id", GetFrameId, METH_VARARGS , "hwnd = get_frame_id()"},
 	{"redraw" , Redraw, METH_VARARGS, "redraw()"},
 	{"getsketch" , GetProfile, METH_VARARGS, "getsketch()"},	
 	{NULL, NULL, 0, NULL}

@@ -1,6 +1,8 @@
-import sys
-#comment out the next lineif you are using windows
-sys.path.insert(0,'/usr/local/share/heekspython/heeksscripts')
+import platform
+if platform.system() != "Windows":
+	import sys
+	sys.path.insert(0,'/usr/local/share/heekspython/heeksscripts')
+
 import HeeksPython as cad
 
 test_menu = cad.addmenu('test menu')
@@ -10,8 +12,6 @@ cad.add_menu_item(test_menu, 'item 2', 'import HeeksPython as cad; cad.addtext("
 cad.add_menu_item(test_menu, 'Bolt Circle','import polar_array;frame_1 = polar_array.MyFrame(None, -1, "");frame_1.Show()', 'test')
 cad.add_menu_item(test_menu, 'item 4', 'import platform\nif platform.system() == "Windows":\n execfile("test2.py")\nelse:\n execfile("linuxtest.py")', 'test')
 
-#uncomment the next section if you are using windows
-'''
 import wx
 
 class CAMWindow(wx.ScrolledWindow):
@@ -31,12 +31,17 @@ class CAMWindow(wx.ScrolledWindow):
         self.sizer.Fit(self)
         self.Show()
 
-hwnd = cad.get_frame_hwnd()
-frame = wx.Window_FromHWND(None, hwnd)
-window = CAMWindow(frame)
-cad.add_window(window.GetHandle())
-'''
-
+import platform
+if platform.system() == "Windows":
+	hwnd = cad.get_frame_hwnd()
+	frame = wx.Window_FromHWND(None, hwnd)
+	window = CAMWindow(frame)
+	cad.add_window(window.GetHandle())
+else:
+	ID = cad.get_frame_id()
+	frame = wx.FindWindowById(ID)
+	window = CAMWindow(frame)
+	cad.add_window(window.GetId())
 
 from PyQt4 import QtGui
 
@@ -47,6 +52,10 @@ tree = QtGui.QTreeWidget(widget)
 tree_item = QtGui.QTreeWidgetItem(tree)
 tree_item.setText(0, "Program")
 tree.addTopLevelItem(tree_item)
-cad.add_window(widget.winId())
-widget.show()
+if platform.system() == "Windows":
+	cad.add_window(widget.winId())
+	widget.show()
+else:
+	#cad.add_window(widget.GetId())
+	widget.show()
 

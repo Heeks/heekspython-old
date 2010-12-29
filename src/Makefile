@@ -42,7 +42,7 @@ ifeq ($(strip $(PYTHONLIBS)),)
   PYTHONLIBS=$(shell python-config --ldflags)
 endif
 
-OBJECTS=ConsoleCanvas.o HeeksPython.o PythonInterface.o #ToolImage.o
+OBJECTS=ConsoleCanvas.o HeeksPython.o PythonInterface.o ToolImage.o
 
 SHARED_LIBRARY=../HeeksPython.so
 
@@ -63,9 +63,9 @@ HeeksPython.o:  $(HEEKSCADPATH)/interface/ToolImage.h
 PythonInterface.o:  $(HEEKSCADPATH)/interface/ToolImage.h		
 	$(CC) -c PythonInterface.cpp  $(CCFLAGS) -o $@
 
-#ToolImage.o: ${HEEKSCADPATH}/interface/ToolImage.cpp \
-#	${HEEKSCADPATH}/interface/ToolImage.h
-#	$(CC) -c ${HEEKSCADPATH}/interface/ToolImage.cpp ${CCFLAGS} -o $@
+ToolImage.o: ${HEEKSCADPATH}/interface/ToolImage.cpp \
+	${HEEKSCADPATH}/interface/ToolImage.h
+	$(CC) -c ${HEEKSCADPATH}/interface/ToolImage.cpp ${CCFLAGS} -o $@
 
 clean:
 	-rm -f $(SHARED_LIBRARY) $(OBJECTS)

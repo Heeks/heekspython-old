@@ -15,7 +15,6 @@
 #include "ConsoleCanvas.h"
 #include "PythonConfig.h"
 
-
 #ifdef _DEBUG
 #undef _DEBUG
 #include <Python.h>
@@ -29,7 +28,7 @@
 
 CHeeksCADInterface* heeksCAD = NULL;
 
-CHeeksPythonApp *theApp;
+CHeeksPythonApp theApp;
 
 CHeeksPythonApp::CHeeksPythonApp(){
 	m_console = NULL;
@@ -55,7 +54,7 @@ void CHeeksPythonApp::OnDestroyDLL()
 void OnConsole( wxCommandEvent& event )
 {
 	wxAuiManager* aui_manager = heeksCAD->GetAuiManager();
-	wxAuiPaneInfo& pane_info = aui_manager->GetPane(theApp->m_console);
+	wxAuiPaneInfo& pane_info = aui_manager->GetPane(theApp.m_console);
 	if(pane_info.IsOk()){
 		pane_info.Show(event.IsChecked());
 		aui_manager->Update();
@@ -65,7 +64,7 @@ void OnConsole( wxCommandEvent& event )
 void OnUpdateConsole( wxUpdateUIEvent& event )
 {
 	wxAuiManager* aui_manager = heeksCAD->GetAuiManager();
-	event.Check(aui_manager->GetPane(theApp->m_console).IsShown());
+	event.Check(aui_manager->GetPane(theApp.m_console).IsShown());
 }
 
 void RunAutoExecPyFile()
@@ -152,12 +151,12 @@ wxString CHeeksPythonApp::GetDllFolder()
 	return m_dll_path;
 }
 
-wxString MyApp::GetResFolder()
+wxString CHeeksPythonApp::GetResFolder()
 {
 #if defined(WIN32) || defined(RUNINPLACE) //compile with 'RUNINPLACE=yes make' then skip 'sudo make install'
-        return theApp->m_dll_path;
+        return m_dll_path;
 #else
-        return (theApp->m_dll_path + _T("/../../share/heekscad"));
+        return (m_dll_path + _T("/../../share/heekscad"));
 #endif
 }
 

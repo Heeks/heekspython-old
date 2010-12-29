@@ -24,6 +24,7 @@ public:
 	void GetOptions(std::list<Property *> *list);
 	void OnFrameDelete();
 	wxString GetDllFolder();
+	wxString GetResFolder();
 };
 
 class MyApp : public wxApp
@@ -32,11 +33,10 @@ class MyApp : public wxApp
  public:
  
    virtual bool OnInit(void);
-   wxString GetResFolder();
  
  };
  
-extern CHeeksPythonApp *theApp;
+extern CHeeksPythonApp theApp;
 
 DECLARE_APP(MyApp)
 
