@@ -69,6 +69,7 @@ void OnUpdateConsole( wxUpdateUIEvent& event )
 
 void RunAutoExecPyFile()
 {
+#if 0
     // As always, first grab the GIL
     wxPyBlock_t blocked = wxPyBeginBlockThreads();
 
@@ -90,6 +91,16 @@ void RunAutoExecPyFile()
 
     // Finally, after all Python stuff is done, release the GIL
     wxPyEndBlockThreads(blocked);
+#else
+		PyEval_RestoreThread(theApp.m_console->m_mainTState);
+		PyObject* result = PyImport_ImportModule("autoexec");
+
+		// Release the python objects we still have
+		if (result)Py_DECREF(result);
+		else PyErr_Print();
+
+		PyEval_SaveThread();
+#endif
 }
 
 void CHeeksPythonApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)

@@ -1,5 +1,4 @@
 // HeeksPython.cpp
-#include <Python.h>
 #include "stdafx.h"
 
 #ifdef WIN32
@@ -19,8 +18,15 @@
 //#include "src/PointDrawing.h"
 #include <set>
 
-
+#ifdef _DEBUG
+#undef _DEBUG
+#include <Python.h>
 #include <wx/wxPython/wxPython.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#include <wx/wxPython/wxPython.h>
+#endif
 
 
 extern CHeeksCADInterface *heeksCAD;
@@ -759,35 +765,24 @@ static PyObject* GetFrameId(PyObject* self, PyObject* args)
 	return PyInt_FromLong(frame->GetId());
 }
 
-std::map<int, wxString> menu_item_map;
+std::map<int, PyObject*> menu_item_map;
 
 void OnMenuItem(wxCommandEvent &event)
 {
-	std::map<int, wxString>::iterator FindIt = menu_item_map.find(event.GetId());
+	std::map<int, PyObject*>::iterator FindIt = menu_item_map.find(event.GetId());
 	if(FindIt != menu_item_map.end())
 	{
-		// As always, first grab the GIL
-		wxPyBlock_t blocked = wxPyBeginBlockThreads();
-
-		// Now make a dictionary to serve as the global namespace when the code is
-		// executed.  Put a reference to the builtins module in it.  (Yes, the
-		// names are supposed to be different, I don't know why...)
-		PyObject* globals = PyDict_New();
-		PyObject* builtins = PyImport_ImportModule("__builtin__");
-		PyDict_SetItemString(globals, "__builtins__", builtins);
-		Py_DECREF(builtins);
-
 		// Execute the python code
-		std::string _str((const char *) FindIt->second.mb_str(wxConvUTF8));
-		PyObject* result = PyRun_String(_str.c_str(), Py_file_input, globals, globals);
+		PyObject* python_callback = FindIt->second;
+
+		PyEval_RestoreThread(theApp.m_console->m_mainTState);
+		PyObject* result = PyEval_CallFunction(python_callback, "()");
 
 		// Release the python objects we still have
 		if (result)Py_DECREF(result);
 		else PyErr_Print();
-		Py_DECREF(globals);
 
-		// Finally, after all Python stuff is done, release the GIL
-		wxPyEndBlockThreads(blocked);
+		PyEval_SaveThread();
 	}
 }
 
@@ -795,15 +790,15 @@ static PyObject* AddMenuItem(PyObject* self, PyObject* args)
 {	
 	long int_menu;
 	const char *title;
-	const char *python_script;
+	PyObject *python_callback;
 	const char *bitmap_path;
-	if (!PyArg_ParseTuple(args, "lsss",  &int_menu, &title, &python_script, &bitmap_path)) return NULL;	
+	if (!PyArg_ParseTuple(args, "lsOs",  &int_menu, &title, &python_callback, &bitmap_path)) return NULL;	
 
 	wxMenu *menu = (wxMenu*)int_menu;
 
-	int id = heeksCAD->AddMenuItem(menu, wxString(_U(title)), ToolImage(_U(bitmap_path)), OnMenuItem, NULL);
+	int id = heeksCAD->AddMenuItem(menu, wxString(_U(title)), ToolImage(_U(bitmap_path), true), OnMenuItem, NULL);
 
-	menu_item_map.insert(std::make_pair(id, wxString(_U(python_script))));
+	menu_item_map.insert(std::make_pair(id, python_callback));
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -926,6 +921,42 @@ static PyObject* GetProfile(PyObject* self, PyObject* args)
 
 }
 
+static PyObject *callback_new_or_open = NULL;
+
+void OnBeforeNewOrOpen(int open, int res) {
+	if(callback_new_or_open)
+	{
+		PyEval_RestoreThread(theApp.m_console->m_mainTState);
+		PyObject* result = PyEval_CallFunction(callback_new_or_open, "ii", open, res);
+		PyEval_SaveThread();
+	}
+}
+
+static PyObject* RegisterCallbacks(PyObject* self, PyObject* args)
+{
+	PyObject *temp;
+	if (!PyArg_ParseTuple(args, "O",  &temp)) return NULL;
+
+	if (!PyCallable_Check(temp)) {
+		PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+		return NULL;
+	}
+	Py_XINCREF(temp);         /* Add a reference to new callback */
+	Py_XDECREF(callback_new_or_open);  /* Dispose of previous callback */
+	callback_new_or_open = temp;       /* Remember new callback */
+
+	static bool callbacks_registered = false;
+
+	if(!callbacks_registered)
+	{
+		heeksCAD->RegisterOnBeforeNewOrOpen(OnBeforeNewOrOpen);
+		callbacks_registered = true;
+	}
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
 
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
@@ -967,12 +998,13 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"addtext", NewText, METH_VARARGS , "addtext('string')"},
 	{"importdxf", DXFImport, METH_VARARGS , "importdxf('/filepath/filename.dxf')"},	
 	{"addmenu", AddMenu, METH_VARARGS , "menu = addmenu('string')"},
-	{"add_menu_item", AddMenuItem, METH_VARARGS , "add_menu_item(menu, 'string', 'python_script')"},
+	{"add_menu_item", AddMenuItem, METH_VARARGS , "add_menu_item(menu, 'string', callback, icon)"},
 	{"add_window", AddWindow, METH_VARARGS , "add_window(hwnd)"},
 	{"get_frame_hwnd", GetFrameHwnd, METH_VARARGS , "hwnd = get_frame_hwnd()"},
 	{"get_frame_id", GetFrameId, METH_VARARGS , "hwnd = get_frame_id()"},
 	{"redraw" , Redraw, METH_VARARGS, "redraw()"},
-	{"getsketch" , GetProfile, METH_VARARGS, "getsketch()"},	
+	{"getsketch" , GetProfile, METH_VARARGS, "getsketch()"},
+	{"register_callbacks" , RegisterCallbacks, METH_VARARGS, "register_callbacks(on_new_or_open)"},
 	{NULL, NULL, 0, NULL}
 };
 

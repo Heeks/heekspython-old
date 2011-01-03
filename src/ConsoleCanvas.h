@@ -15,12 +15,12 @@ class CConsoleCanvas: public wxScrolledWindow
 private:
     void Resize();
 	bool Init_wxPython();
-	PyThreadState* m_mainTState;
 	wxWindow* DoPythonStuff(wxWindow* parent);
 	
 
 public:
     wxWindow *m_textCtrl;
+	PyThreadState* m_mainTState;
 
     CConsoleCanvas(wxWindow* parent);
 	virtual ~CConsoleCanvas(){}
