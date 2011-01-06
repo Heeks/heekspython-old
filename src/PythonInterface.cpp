@@ -902,23 +902,64 @@ static PyObject* Redraw(PyObject* self, PyObject* args)
 }
 
 
-static PyObject* GetProfile(PyObject* self, PyObject* args)
+static PyObject* GetSketch(PyObject* self, PyObject* args)
 {
-	//I am trying to return a single sketch 
-	//this doesn't work yet
-	//it just returns and int of '1' every time
+	//Allows the user to pick a single sketch 
+	// it returns the sketch id, or 0 if none was picked
 	
 	PyObject *resultobj = 0;
 
 	int result;
 
 	result = heeksCAD->PickObjects(_("Select a Sketch"), MARKING_FILTER_SKETCH,true);
-	resultobj = PyLong_FromLong(result);
+
+	int sketch_id = 0;
+
+	for(HeeksObj* object = heeksCAD->GetFirstMarkedObject(); object; object = heeksCAD->GetNextMarkedObject())
+	{
+		if(object->GetType() == SketchType){
+			sketch_id = object->GetID();
+			break;
+		}
+	}
+
+	resultobj = PyLong_FromLong(sketch_id);
 	
 	PyObject *pValue = resultobj;
 	Py_INCREF(pValue);
 	return pValue;
 
+}
+
+static PyObject* GetSketches(PyObject* self, PyObject* args)
+{
+	// Allows the user to pick multiple sketches
+	// returns a python list of sketch ids
+	int result = heeksCAD->PickObjects(_("Select Sketches"), MARKING_FILTER_SKETCH);
+
+	PyObject* pList = PyList_New(0);
+	for(HeeksObj* object = heeksCAD->GetFirstMarkedObject(); object; object = heeksCAD->GetNextMarkedObject())
+	{
+		if(object->GetType() == SketchType){
+			PyList_Append(pList, PyLong_FromLong(object->GetID()));
+		}
+	}
+
+	return pList;
+}
+
+static PyObject* GetSelectedSketches(PyObject* self, PyObject* args)
+{
+	// returns a python list of sketch ids
+	PyObject* pList = PyList_New(0);
+	for(HeeksObj* object = heeksCAD->GetFirstMarkedObject(); object; object = heeksCAD->GetNextMarkedObject())
+	{
+		if(object->GetType() == SketchType){
+			PyList_Append(pList, PyLong_FromLong(object->GetID()));
+		}
+	}
+
+	return pList;
 }
 
 static PyObject *callback_new_or_open = NULL;
@@ -957,6 +998,10 @@ static PyObject* RegisterCallbacks(PyObject* self, PyObject* args)
 	return Py_None;
 }
 
+static PyObject* GetViewUnits(PyObject* self, PyObject* args)
+{
+	return PyFloat_FromDouble(heeksCAD->GetViewUnits());
+}
 
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
@@ -1003,8 +1048,11 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"get_frame_hwnd", GetFrameHwnd, METH_VARARGS , "hwnd = get_frame_hwnd()"},
 	{"get_frame_id", GetFrameId, METH_VARARGS , "hwnd = get_frame_id()"},
 	{"redraw" , Redraw, METH_VARARGS, "redraw()"},
-	{"getsketch" , GetProfile, METH_VARARGS, "getsketch()"},
+	{"getsketch" , GetSketch, METH_VARARGS, "getsketch()"},
+	{"getsketches" , GetSketches, METH_VARARGS, "getsketches()"},
+	{"get_selected_sketches" , GetSelectedSketches, METH_VARARGS, "get_selected_sketches()"},
 	{"register_callbacks" , RegisterCallbacks, METH_VARARGS, "register_callbacks(on_new_or_open)"},
+	{"get_view_units", GetViewUnits, METH_VARARGS , "units = get_view_units()"},
 	{NULL, NULL, 0, NULL}
 };
 
