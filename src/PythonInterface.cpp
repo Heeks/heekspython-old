@@ -1003,6 +1003,20 @@ static PyObject* GetViewUnits(PyObject* self, PyObject* args)
 	return PyFloat_FromDouble(heeksCAD->GetViewUnits());
 }
 
+static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
+{
+	const wchar_t* str = heeksCAD->GetFileFullPath();
+	if(str == NULL)
+	{
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	char conv_str[4096];
+	size_t num;
+	wcstombs_s(&num, conv_str, 4096, str, 4096);
+	return PyString_FromString(conv_str);
+}
+
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
 	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
@@ -1053,6 +1067,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"get_selected_sketches" , GetSelectedSketches, METH_VARARGS, "get_selected_sketches()"},
 	{"register_callbacks" , RegisterCallbacks, METH_VARARGS, "register_callbacks(on_new_or_open)"},
 	{"get_view_units", GetViewUnits, METH_VARARGS , "units = get_view_units()"},
+	{"GetFileFullPath", GetFileFullPath, METH_VARARGS , "file_path = GetFileFullPath()"},
 	{NULL, NULL, 0, NULL}
 };
 
