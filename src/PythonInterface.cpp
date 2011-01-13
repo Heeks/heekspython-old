@@ -525,9 +525,9 @@ static PyObject* Cut(PyObject* self, PyObject* args)
 	std::list<HeeksObj*> list;
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));	
-	//lastobj = heeksCAD->Cut(list);
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);	
-	heeksCAD->Cut(list);		
+	lastobj = heeksCAD->Cut(list);
+	heeksCAD->GetMainObject()->Add(lastobj,NULL);	
+	//heeksCAD->Cut(list);		
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -1035,7 +1035,7 @@ static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
 		return Py_None;
 	}
 	char conv_str[4096];
-	size_t num;
+	//size_t num;
 	wcstombs(conv_str, str, 4096);
 	return PyString_FromString(conv_str);
 }
@@ -1043,7 +1043,7 @@ static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
 
 static PyObject* RemoveObject(PyObject* self, PyObject* args)
 {	
-//remove original object -can be used after cut operation
+//remove object 
 	HeeksObj *obj;
 	int pyobj;
 
@@ -1111,7 +1111,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"get_selected_sketches" , GetSelectedSketches, METH_VARARGS, "get_selected_sketches()"},
 	{"register_callbacks" , RegisterCallbacks, METH_VARARGS, "register_callbacks(on_new_or_open)"},
 	{"get_view_units", GetViewUnits, METH_VARARGS , "units = get_view_units()"},
-	//{"GetFileFullPath", GetFileFullPath, METH_VARARGS , "file_path = GetFileFullPath()"},
+	{"GetFileFullPath", GetFileFullPath, METH_VARARGS , "file_path = GetFileFullPath()"},
 	{"remove",RemoveObject, METH_VARARGS , "remove(object)"},
 	{"undopt",NewCreateUndoPoint, METH_VARARGS , "undopt()"},
 	{"changed",NewChanged, METH_VARARGS , "changed()"},
