@@ -74,7 +74,7 @@ static PyObject* NewPoint(PyObject* self, PyObject* args)
 
 	lastobj = heeksCAD->NewPoint(p);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -92,7 +92,7 @@ static PyObject* NewLine(PyObject* self, PyObject* args)
 
 	lastobj = heeksCAD->NewLine(s,e);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -107,7 +107,7 @@ static PyObject* NewLine3d(PyObject* self, PyObject* args)
 
 	lastobj = heeksCAD->NewLine(s,e);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -122,7 +122,7 @@ static PyObject* NewCircle(PyObject* self, PyObject* args)
 
 	lastobj = heeksCAD->NewCircle(c,r);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -139,7 +139,7 @@ static PyObject* NewArc(PyObject* self, PyObject* args)
 
 	lastobj = heeksCAD->NewArc(c,u,r,s,e);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -159,7 +159,7 @@ static PyObject* NewArc2(PyObject* self, PyObject* args)
 
 	lastobj = heeksCAD->NewArc(s,e,c,u);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -177,7 +177,7 @@ static PyObject* NewCuboid(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "dddddd", &c[0],&c[1],&c[2],&x,&y,&z)) return NULL;
 	lastobj = heeksCAD->NewCuboid(c,x,y,z);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -193,7 +193,7 @@ static PyObject* NewCylinder(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "ddddd", &c[0],&c[1],&c[2],&r,&h)) return NULL;
 	lastobj = heeksCAD->NewCylinder(c,r,h);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -209,7 +209,7 @@ static PyObject* NewCylinderEx(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "dddddddd", &pos[0],&pos[1],&pos[2],&dir[0],&dir[1],&dir[2],&r,&h)) return NULL;
 	lastobj = heeksCAD->NewCylinderEx(pos,dir,r,h);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -225,7 +225,7 @@ static PyObject* NewCone(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "dddddd", &c[0],&c[1],&c[2],&r1,&r2,&h)) return NULL;
 	lastobj = heeksCAD->NewCone(c,r1,r2,h);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -239,8 +239,7 @@ static PyObject* NewSphere(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "dddd", &c[0],&c[1],&c[2],&r)) return NULL;
 	lastobj = heeksCAD->NewSphere(c,r);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
-
+	
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
 	return pValue;
@@ -255,7 +254,7 @@ static PyObject* NewGroup(PyObject* self, PyObject* args)
 {
 	lastobj = heeksCAD->NewGroup();
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -272,7 +271,7 @@ static PyObject* Reorder(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
 	obj = (HeeksObj*)heeksCAD->GetIDObject(oid>>16,oid&0xFFFF);
 	heeksCAD->ReOrderSketch(obj,SketchOrderTypeCloseCW);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -283,7 +282,7 @@ static PyObject* ViewExtents(PyObject* self, PyObject* args)
 {
 
 	heeksCAD->ViewExtents(false);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -294,7 +293,7 @@ static PyObject* XYZview(PyObject* self, PyObject* args)
 {
 
 	heeksCAD->XYZView(true);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -306,7 +305,7 @@ static PyObject* NewSketch(PyObject* self, PyObject* args)
 {
 	lastobj = heeksCAD->NewSketch();
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -340,7 +339,7 @@ static PyObject* Rotate(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	heeksCAD->RotateObject(obj,p,u,r);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -357,13 +356,14 @@ static PyObject* Extrude(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple( args, "id", &pyobj,&h)) return NULL;
 
     // Convert the PyCObject to a void pointer:
+
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	lastobj = heeksCAD->ExtrudeSketch(obj,h,true);
 
 
 
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -383,7 +383,7 @@ static PyObject* Revolve(PyObject* self, PyObject* args)
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	lastobj = heeksCAD->RevolveSketch(obj,a,true);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -403,7 +403,7 @@ static PyObject* Translate(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
     obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	heeksCAD->TranslateObject(obj,p);
-	heeksCAD->Repaint();
+	
 	
 
 	PyObject *pValue = Py_None;
@@ -423,7 +423,7 @@ static PyObject* Scale(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
     	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	heeksCAD->ScaleObject(obj,p,scale);
-	heeksCAD->Repaint();
+	
 	
 
 	PyObject *pValue = Py_None;
@@ -443,7 +443,7 @@ static PyObject* Add(PyObject* self, PyObject* args)
 	group = (HeeksObj*)heeksCAD->GetIDObject(pygroup>>16,pygroup&0xFFFF);
 	obj->Owner()->Remove(obj);
 	group->Add(obj,NULL);
-	heeksCAD->Repaint();
+	
 	
 
 	PyObject *pValue = Py_None;
@@ -463,7 +463,7 @@ static PyObject* Fuse(PyObject* self, PyObject* args)
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
 	lastobj = heeksCAD->Fuse(list);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 	
 
 	PyObject *pValue = Py_None;
@@ -484,7 +484,7 @@ static PyObject* Common(PyObject* self, PyObject* args)
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
 	lastobj = heeksCAD->Common(list);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 	
 
 	PyObject *pValue = Py_None;
@@ -506,7 +506,7 @@ static PyObject* LineArc2Wire(PyObject* self, PyObject* args)
 	
 	lastobj = heeksCAD->LineArcsToWire(list);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 	
 
 	PyObject *pValue = Py_None;
@@ -524,17 +524,40 @@ static PyObject* Cut(PyObject* self, PyObject* args)
     // Convert the PyCObject to a void pointer:
 	std::list<HeeksObj*> list;
 	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj1>>16,pyobj1&0xFFFF));
-	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));
+	list.push_back((HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF));	
 	//lastobj = heeksCAD->Cut(list);
-	//heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Cut(list);
-	heeksCAD->Repaint();
-	
+	//heeksCAD->GetMainObject()->Add(lastobj,NULL);	
+	heeksCAD->Cut(list);		
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
 	return pValue;
 }
+
+static PyObject* NewCreateUndoPoint(PyObject* self, PyObject* args)
+{
+	
+	
+	heeksCAD->CreateUndoPoint();
+	
+	Py_INCREF(Py_None);
+	return Py_None;
+	
+
+}
+
+static PyObject* NewChanged(PyObject* self, PyObject* args)
+{
+	
+	
+	heeksCAD->Changed();
+	
+	Py_INCREF(Py_None);
+	return Py_None;
+	
+
+}
+
 
 static PyObject* Pipe(PyObject* self, PyObject* args)
 {
@@ -548,7 +571,7 @@ static PyObject* Pipe(PyObject* self, PyObject* args)
 	profile = (HeeksObj*)heeksCAD->GetIDObject(pyobj2>>16,pyobj2&0xFFFF);
 	lastobj = heeksCAD->MakePipe(wire,profile);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 	
 
 	PyObject *pValue = Py_None;
@@ -580,7 +603,7 @@ static PyObject* Fillet2d(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple( args, "idddd", &pyobj,&p[0], &p[1], &p[2], &r)) return NULL;
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	heeksCAD->FilletSketchAtPoint(obj,p,r);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -596,7 +619,7 @@ static PyObject* NewCoordinateSystem(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "ddddddddd",  &o[0],&o[1],&o[2],&x[0],&x[1],&x[2],&y[0],&y[1],&y[2])) return NULL;
 	lastobj = heeksCAD->NewCoordinateSystem(o,x,y);
 	heeksCAD->GetMainObject()->Add(lastobj,NULL);
-	heeksCAD->Repaint();
+	
 
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
@@ -883,7 +906,7 @@ static PyObject* DXFImport(PyObject* self, PyObject* args)
 
 	heeksCAD->OpendxfFile(_U(filepath));	
 	
-	heeksCAD->Repaint();	
+		
 	PyObject *pValue = Py_None;
 	Py_INCREF(pValue);
 	return pValue;
@@ -1002,7 +1025,7 @@ static PyObject* GetViewUnits(PyObject* self, PyObject* args)
 {
 	return PyFloat_FromDouble(heeksCAD->GetViewUnits());
 }
-
+/*
 static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
 {
 	const wchar_t* str = heeksCAD->GetFileFullPath();
@@ -1016,6 +1039,27 @@ static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
 	wcstombs_s(&num, conv_str, 4096, str, 4096);
 	return PyString_FromString(conv_str);
 }
+*/
+
+static PyObject* RemoveObject(PyObject* self, PyObject* args)
+{	
+//remove original object -can be used after cut operation
+	HeeksObj *obj;
+	int pyobj;
+
+    if (!PyArg_ParseTuple( args, "i",  &pyobj)) return NULL;
+	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
+	heeksCAD->Remove(obj);
+	
+
+	PyObject *pValue = Py_None;
+	Py_INCREF(pValue);
+	return pValue;
+}
+
+
+
+
 
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
@@ -1067,7 +1111,10 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"get_selected_sketches" , GetSelectedSketches, METH_VARARGS, "get_selected_sketches()"},
 	{"register_callbacks" , RegisterCallbacks, METH_VARARGS, "register_callbacks(on_new_or_open)"},
 	{"get_view_units", GetViewUnits, METH_VARARGS , "units = get_view_units()"},
-	{"GetFileFullPath", GetFileFullPath, METH_VARARGS , "file_path = GetFileFullPath()"},
+	//{"GetFileFullPath", GetFileFullPath, METH_VARARGS , "file_path = GetFileFullPath()"},
+	{"remove",RemoveObject, METH_VARARGS , "remove(object)"},
+	{"undopt",NewCreateUndoPoint, METH_VARARGS , "undopt()"},
+	{"changed",NewChanged, METH_VARARGS , "changed()"},
 	{NULL, NULL, 0, NULL}
 };
 
