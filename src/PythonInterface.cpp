@@ -1025,7 +1025,7 @@ static PyObject* GetViewUnits(PyObject* self, PyObject* args)
 {
 	return PyFloat_FromDouble(heeksCAD->GetViewUnits());
 }
-/*
+
 static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
 {
 	const wchar_t* str = heeksCAD->GetFileFullPath();
@@ -1036,10 +1036,10 @@ static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
 	}
 	char conv_str[4096];
 	size_t num;
-	wcstombs_s(&num, conv_str, 4096, str, 4096);
+	wcstombs(conv_str, str, 4096);
 	return PyString_FromString(conv_str);
 }
-*/
+
 
 static PyObject* RemoveObject(PyObject* self, PyObject* args)
 {	
