@@ -1050,10 +1050,10 @@ static PyObject* RemoveObject(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple( args, "i",  &pyobj)) return NULL;
 	obj = (HeeksObj*)heeksCAD->GetIDObject(pyobj>>16,pyobj&0xFFFF);
 	heeksCAD->Remove(obj);
-	
 
+	
 	PyObject *pValue = Py_None;
-	Py_INCREF(pValue);
+	
 	return pValue;
 }
 
