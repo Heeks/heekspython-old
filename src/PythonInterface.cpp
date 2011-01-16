@@ -1035,11 +1035,73 @@ static PyObject* GetFileFullPath(PyObject* self, PyObject* args)
 		return Py_None;
 	}
 	char conv_str[4096];
-	//size_t num;
 	wcstombs(conv_str, str, 4096);
 	return PyString_FromString(conv_str);
 }
 
+static PyObject* GetSketchShape(PyObject* self, PyObject* args)
+{
+	int sketch_id = 0;
+    if (!PyArg_ParseTuple( args, "i", &sketch_id)) return NULL;
+
+	HeeksObj* object = heeksCAD->GetIDObject(SketchType, sketch_id);
+	if(object == NULL)return PyString_FromString("");
+
+	std::string sketch_str;
+
+	HeeksObj* re_ordered_sketch = NULL;
+	SketchOrderType order = heeksCAD->GetSketchOrder(object);
+	if( (order != SketchOrderTypeCloseCW) &&
+		(order != SketchOrderTypeCloseCCW) &&
+		(order != SketchOrderTypeMultipleCurves) &&
+		(order != SketchOrderHasCircles))
+	{
+		re_ordered_sketch = object->MakeACopy();
+		heeksCAD->ReOrderSketch(re_ordered_sketch, SketchOrderTypeReOrder);
+		object = re_ordered_sketch;
+	}
+
+	bool first = true;
+	char str[1024];
+	for(HeeksObj* child = object->GetFirstChild(); child; child = object->GetNextChild())
+	{
+		if(first)
+		{
+			double s[3];
+			if(child->GetStartPoint(s))
+			{
+				sprintf(str, "x%gy%g\n", s[0], s[1]);
+				sketch_str.append(str);
+			}
+			first = false;
+		}
+
+		double e[3];
+		if(!child->GetEndPoint(e))continue;
+
+		if(object->GetType() == ArcType)
+		{
+			double c[3];
+			if(!child->GetCentrePoint(c))continue;
+			double a[3];
+			if(!heeksCAD->GetArcAxis(child, a))continue;
+			sprintf(str, "%sx%gy%gi%gj%g\n", (a[2]>0)?"a":"t", e[0], e[1], c[0], c[1]);
+			sketch_str.append(str);
+		}
+		else
+		{
+			sprintf(str, "x%gy%g\n", e[0], e[1]);
+			sketch_str.append(str);
+		}
+	}
+
+	if(re_ordered_sketch)
+	{
+		delete re_ordered_sketch;
+	}
+
+	return PyString_FromString(sketch_str.c_str());
+}
 
 static PyObject* RemoveObject(PyObject* self, PyObject* args)
 {	
@@ -1057,10 +1119,6 @@ static PyObject* RemoveObject(PyObject* self, PyObject* args)
 	return pValue;
 }
 
-
-
-
-
 static PyMethodDef HeeksPythonMethods[] = {
 	{"sketch", NewSketch, METH_VARARGS , "sketch()"},
 	{"wxhandle", WxHandle, METH_VARARGS , "wxhandle()"},
@@ -1077,9 +1135,9 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"circle", NewCircle, METH_VARARGS , "circle(centre_x, centre_y, radius)"},
 	{"cuboid", NewCuboid, METH_VARARGS , "cuboid(centre_x, centre_y, centre_z, length, width, height)"},
 	{"cylinder", NewCylinder, METH_VARARGS , "cylinder(centre_x, centre_y, centre_z, radius, height)"},
-        {"directedcylinder", NewCylinderEx, METH_VARARGS , "directedcylinder(centre_x, centre_y, centre_z, dir_x, dir_y, dir_z, radius, height)"},
+    {"directedcylinder", NewCylinderEx, METH_VARARGS , "directedcylinder(centre_x, centre_y, centre_z, dir_x, dir_y, dir_z, radius, height)"},
 	{"cone", NewCone, METH_VARARGS , "cylinder(centre_x, centre_y, centre_z, radius1, radius2, height)"},
-    	{"sphere",NewSphere,METH_VARARGS ,"sphere(centre_x, centre_y, centre_z, radius)"},
+	{"sphere",NewSphere,METH_VARARGS ,"sphere(centre_x, centre_y, centre_z, radius)"},
 	{"group", NewGroup, METH_VARARGS , "group()"},
 	{"add", Add, METH_VARARGS, "add(group,obj)"},
 	{"fuse",Fuse, METH_VARARGS, "fuse(obj1,obj2)"},
@@ -1112,6 +1170,7 @@ static PyMethodDef HeeksPythonMethods[] = {
 	{"register_callbacks" , RegisterCallbacks, METH_VARARGS, "register_callbacks(on_new_or_open)"},
 	{"get_view_units", GetViewUnits, METH_VARARGS , "units = get_view_units()"},
 	{"GetFileFullPath", GetFileFullPath, METH_VARARGS , "file_path = GetFileFullPath()"},
+	{"GetSketchShape", GetSketchShape, METH_VARARGS , "s = GetSketchShape(2)"},
 	{"remove",RemoveObject, METH_VARARGS , "remove(object)"},
 	{"undopt",NewCreateUndoPoint, METH_VARARGS , "undopt()"},
 	{"changed",NewChanged, METH_VARARGS , "changed()"},

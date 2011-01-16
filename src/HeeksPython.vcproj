@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;&quot;$(PYTHON25_INCLUDE)&quot;;$(HEEKSCADPATH);&quot;$(WXWIN)\lib\vc_dll\mswud&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\wxPython\include&quot;"
+				AdditionalIncludeDirectories=".\;&quot;$(PYTHON_INCLUDE)&quot;;$(HEEKSCADPATH);&quot;$(WXWIN)\lib\vc_dll\mswud&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\wxPython\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;_UNICODE;UNICODE;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;STRICT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxbase28ud.lib wxmsw28ud_core.lib wxmsw28ud_aui.lib wxmsw28ud_gl.lib $(PYTHON25_LIB)"
+				AdditionalDependencies="wxbase28ud.lib wxmsw28ud_core.lib wxmsw28ud_aui.lib wxmsw28ud_gl.lib $(PYTHON_LIB)"
 				OutputFile="..\$(ProjectName).pyd"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;"
 				GenerateDebugInformation="true"
@@ -91,7 +91,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -133,7 +133,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wxbase28u.lib wxmsw28u_core.lib wxmsw28u_aui.lib wxmsw28u_gl.lib $(PYTHON_LIB)"
-				OutputFile="$(OutDir)\$(ProjectName).pyd"
+				OutputFile="$(HEEKSCADPATH)\$(ProjectName).pyd"
 				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"

@@ -6,4 +6,6 @@ else:
 	sys.path.insert(0,'/usr/local/share/heekspython/heeksscripts')
 
 import HeeksCNC
+from HeeksCAD import HeeksCAD
+HeeksCNC.cad = HeeksCAD()
 HeeksCNC.start()
