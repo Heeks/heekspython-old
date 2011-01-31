@@ -1079,7 +1079,7 @@ static PyObject* GetSketchShape(PyObject* self, PyObject* args)
 		double e[3];
 		if(!child->GetEndPoint(e))continue;
 
-		if(object->GetType() == ArcType)
+		if(child->GetType() == ArcType)
 		{
 			double c[3];
 			if(!child->GetCentrePoint(c))continue;
